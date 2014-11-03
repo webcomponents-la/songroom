@@ -1,0 +1,15 @@
+{
+  "name": "songroom",
+  "version": "0.0.0",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.4.0",
+    "core-ajax": "Polymer/core-ajax#~0.4.2",
+    "firebase-element": "Polymer/firebase-element#~0.4.2",
+    "core-icons": "Polymer/core-icons#~0.4.2",
+    "core-list": "Polymer/core-list#~0.4.2",
+    "paper-icon-button": "Polymer/paper-icon-button#~0.4.2"
+  },
+  "devDependencies": {
+    "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0"
+  }
+}

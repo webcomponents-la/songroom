@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
+
+<link rel="import" href="../cdg-player/cdg-player.html">
+
+<polymer-element name="songroom-player" attributes="currentTrack" on-dblclick="{{goFullscreen}}">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+    </style>
+    <firebase-element id="trackRef" location="https://songroom.firebaseio.com/testtrack" data="{{currentTrack}}"></firebase-element>
+    <cdg-player fit src="{{currentTrack.src}}" gsrc="{{currentTrack.gsrc}}" paused="{{currentTrack.paused}}"></cdg-player>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        goFullscreen: function() {
+          if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.msFullscreenElement) {
+            if (document.cancelFullScreen) { document.cancelFullScreen(); } 
+            else if (document.msCancelFullscreen) { document.msCancelFullscreen(); }
+            else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+            else if (document.webkitCancelFullScreen) { document.webkitCancelFullScreen(); }
+          } else {
+            if (this.requestFullscreen) { this.requestFullscreen(); } 
+            else if (this.msRequestFullscreen) { this.msRequestFullscreen(); }
+            else if (this.mozRequestFullScreen) { this.mozRequestFullScreen(); }
+            else if (this.webkitRequestFullscreen) { this.webkitRequestFullscreen(); }
+          }
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

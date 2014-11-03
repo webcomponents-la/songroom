@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+
+<polymer-element name="songroom-controller" attributes="currentTrack">
+  <template>
+    <link rel="stylesheet" href="songroom-controller.css">
+    <firebase-element id="trackRef" location="https://songroom.firebaseio.com/testtrack" data="{{currentTrack}}"></firebase-element>
+    
+    <core-icon icon="{{currentTrack.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
+    
+    <core-list data="{{songs}}" height="400" on-core-activate="{{songTapped}}">
+      <template>
+        <div style="line-height: 40px">
+          <b>{{model.title}}</b> ({{model.artist}})
+        </div>
+      </template>
+    </core-list>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+      
+      Polymer({
+        created: function() {
+          this.songs = [
+            {artist: "The Foundations", title: "Build Me Up Buttercup", src: "/songs/test.mp3", gsrc: "/songs/test.cdg"},
+            {artist: "Jonathan Coulton", title: "Flickr", src: "/songs/test2.ogg", gsrc: "/songs/test2.cdg"}
+          ]
+        },
+        togglePlayback: function() {
+          this.currentTrack.paused = !this.currentTrack.paused;
+        },
+        playbackIcon: function(paused) {
+          return paused ? 'av:play-arrow' : 'av:pause';
+        },
+        songTapped: function(e, detail){
+          this.currentTrack.paused = true;
+          this.currentTrack.src = detail.data.src;
+          this.currentTrack.gsrc = detail.data.gsrc;
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

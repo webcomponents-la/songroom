@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../cdg-canvas/cdg-canvas.html">
+
+<polymer-element name="cdg-player" attributes="src gsrc framerate paused">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+    </style>
+    <audio id="audio" src="{{src}}"></audio>
+    <cdg-canvas fit id="canvas" src="{{gsrc}}"></cdg-canvas>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        paused: true,
+        framerate: 30,
+        positionInterval: null,
+        togglePlayback: function() {
+          this.paused = !this.paused;
+        },
+        play: function() {
+          this.paused = false;
+        },
+        pause: function() {
+          this.paused = true;
+        },
+        srcChanged: function() {
+          this.pause();
+          this.$.canvas.position = 0;
+        },
+        pausedChanged: function(isPaused) {
+          if (isPaused) {
+            this.$.audio.play();
+            this.positionInterval = setInterval(this.render.bind(this), 1000 / this.framerate);
+          } else {
+            this.$.audio.pause();
+            clearInterval(this.positionInterval);
+            this.positionInterval = null;
+          }
+        },
+        render: function(){
+          this.$.canvas.position = this.$.audio.currentTime;
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

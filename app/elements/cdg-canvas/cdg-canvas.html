@@ -1,0 +1,69 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="cdg-canvas">
+  <template>
+    <style>
+      :host {
+        display: block;
+        background: black;
+      }
+      
+      #canvas {
+        position: absolute;
+        top: calc(50% - 107px);
+        left: calc(50% - 156px);
+      }
+    </style>
+    <core-ajax url="{{src}}" handleAs="text" response="{{data}}" method="get" auto></core-ajax>
+    <canvas width="288" height="192" id="canvas"></canvas>
+  </template>
+  <script src="cdg-canvas.js"></script>
+  <script>
+    Polymer('cdg-canvas', {
+      publish: {
+        src: null,
+        position: 0,
+        source: null,
+        data: null
+      },
+      ready: function() {
+        this.decoder = new CDGMagic_cdgdecoder(this.$.canvas, this);
+      },
+      dataChanged: function() {
+        this.decoder.reset_cdg_state();
+        this.decoder.redraw_canvas();
+      },
+      attached: function() {
+        setInterval(this.resize.bind(this), 500);
+        this.resize();
+      },
+      resize: function() {
+        var rect = this.getBoundingClientRect();
+        var xScale = rect.width / 312.0;
+        var yScale = rect.height / 214.0;
+        var scale = Math.min(xScale, yScale);
+        this.$.canvas.style.transform = "scale(" + scale + ")";
+      },
+      positionChanged: function() {
+        var playPosition = Math.floor(this.position * 300);
+        var currentPack  = this.decoder.get_current_pack();
+        
+        // Constrain the play position to positive values only.
+        playPosition = (playPosition < 0) ? 0 : playPosition;
+        // Render from the beginning of the stream if a reverse seek of more than one second occurred.
+        if (playPosition < (currentPack-300))  { this.decoder.reset_cdg_state(); currentPack = 0; }
+        // Calculate the next probable play position, in packs...
+        var positionToPlay = currentPack + 6;
+        // Jump to the actual play position if it's ahead of our calculated smoothed position.
+        positionToPlay = (playPosition > positionToPlay) ? playPosition : positionToPlay;
+        // Check if we should render any packs, and do so if needed.
+        if (positionToPlay > currentPack)
+        {
+            this.decoder.decode_packs(this.data, positionToPlay);
+            this.decoder.redraw_canvas();
+        }
+      }
+    });
+  </script>
+</polymer-element>
