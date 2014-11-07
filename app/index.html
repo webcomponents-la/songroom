@@ -8,7 +8,9 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-
+  
+  <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+  
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
@@ -16,14 +18,21 @@
   <script src="bower_components/platform/platform.js"></script>
   <!-- build:vulcanized elements/elements.vulcanized.html -->
   <link rel="import" href="bower_components/font-roboto/roboto.html">
+  <link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+  <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+  
   <link rel="import" href="elements/elements.html">
   <link rel="import" href="elements/songroom-controller/songroom-controller.html">
   <!-- endbuild-->
 </head>
 
 <body unresolved fullbleed vertical layout>
-  <songroom-controller></songroom-controller>
-  
+  <core-header-panel mode="seamed" flex id="interface">
+    <core-toolbar id="titlebar">Songroom</core-toolbar>
+    <section class="content" flex>
+      <songroom-controller fit></songroom-controller>
+    </section>
+  </core-header-panel>  
   <!-- build:js scripts/app.js -->
   <script src="scripts/app.js"></script>
   <!-- endbuild-->

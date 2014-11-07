@@ -1,0 +1,9 @@
+# A sample Gemfile
+source "https://rubygems.org"
+
+gem 'aws-sdk'
+gem 'dotenv'
+gem 'id3tag'
+gem 'musicbrainz-ruby', require: 'musicbrainz'
+gem 'lastfm'
+gem 'activesupport', require: 'active_support'

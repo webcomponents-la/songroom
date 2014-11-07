@@ -1,0 +1,94 @@
+#!/usr/bin/env ruby
+
+require 'bundler'
+require 'pathname'
+require 'json'
+require 'active_support/core_ext'
+Bundler.require :default
+Dotenv.load
+
+$mb = MusicBrainz::Client.new(:username => 'songroom',
+                                 :password => 'songroom')
+
+$lastfm = Lastfm.new(ENV['LASTFM_KEY'], ENV['LASTFM_SECRET'])
+
+unless ENV['LASTFM_SESSION']
+  token = $lastfm.auth.get_token
+  puts "http://www.last.fm/api/auth/?api_key=#{ENV['LASTFM_KEY']}&token=#{token}"
+  gets
+end
+# open 'http://www.last.fm/api/auth/?api_key=xxxxxxxxxxx&token=xxxxxxxx' and grant the application
+
+$lastfm.session = ENV['LASTFM_SESSION'] || $lastfm.auth.get_session(token: token)['key']
+puts "Session Key: #{$lastfm.session}"
+
+results = []
+
+begin
+  s3 = AWS::S3.new(access_key_id: ENV['AWS_ACCESS_KEY_ID'], secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'])
+  s3.buckets['songroom'].objects.with_prefix('songs/').each do |obj|
+    if obj.key.end_with? '.mp3'
+      path = Pathname.new(obj.key)
+      title, artist = *path.basename.to_s.sub!(/\.mp3\z/,'').split(" - ")[1..2]
+      track_info = $lastfm.track.get_info(track: title, artist: artist) rescue nil
+      
+      if !track_info
+        info = {
+          title: title,
+          artist: {
+            name: artist
+          }
+        }
+      elsif track_info['mbid'] != {} && brain_info = $mb.recording(mbid: track_info['mbid'], inc: 'artists+releases')
+        releases = brain_info.recording.release_list.release
+        album = releases.is_a?(Array) ? releases.min{|a,b| a.date && b.date ? a.date <=> b.date : a } : releases
+        info = {
+          title: track_info['name'],
+          mbid: track_info['mbid'],
+          duration: (brain_info.recording[:length].to_i / 1000.0),
+          artist: {
+            name: track_info['artist']['name'],
+            mbid: track_info['artist']['mbid']
+          },
+          album: {
+            title: album.title,
+            mbid: album.id
+          },
+          urls: {
+            src: obj.public_url(secure: true).to_s,
+            gsrc: obj.public_url(secure: true).to_s.sub('.mp3', '.cdg')
+          },
+          year: album.date.to_i,
+          tags: track_info['toptags']['tag'].try(:map){|t| t['name']}
+        }
+      else
+        info = {
+          title: track_info['name'],
+          artist: {
+            name: track_info['artist']['name'],
+            mbid: track_info['artist']['mbid']
+          },
+          urls: {
+            src: obj.public_url(secure: true).to_s,
+            gsrc: obj.public_url(secure: true).to_s.sub('.mp3', '.cdg')
+          },
+          duration: (track_info['duration'].to_i / 1000.0),
+          tags: track_info['toptags']['tag'].try(:map){|t| t['name']}
+        }
+      end
+      
+      results << info
+      puts "Logged #{info[:artist][:name]} - #{info[:title]}"
+      # mb_release = MusicBrainz::Release.find(mb_track.recording_id)
+      # puts mb_release.inspect
+      # data = obj.read
+      # puts data.bytesize
+      # puts ID3Tag::AudioFile.new(StringIO.open(data, 'rb')).v1_tag_present?
+      # break
+    end
+  end
+rescue StanardError => e
+  raise e
+ensure
+  File.open('results.json', 'w'){|f| f.write(results.to_json)}
+end

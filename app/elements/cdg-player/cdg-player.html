@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../cdg-canvas/cdg-canvas.html">
 
-<polymer-element name="cdg-player" attributes="src gsrc framerate paused">
+<polymer-element name="cdg-player" attributes="src gsrc framerate paused position">
   <template>
     <style>
       :host {
@@ -19,6 +19,7 @@
       Polymer({
         paused: true,
         framerate: 30,
+        tick: 0,
         positionInterval: null,
         togglePlayback: function() {
           this.paused = !this.paused;
@@ -44,7 +45,15 @@
           }
         },
         render: function(){
-          this.$.canvas.position = this.$.audio.currentTime;
+          this.$.canvas.position = this.$.audio.currentTime
+          if (this.tick % this.framerate === 0) {
+            this.position = this.$.audio.currentTime;
+          }
+          this.tick++;
+        },
+        seek: function(pos) {
+          console.log("Seeking", pos);
+          this.$.audio.currentTime = pos;
         }
       });
 

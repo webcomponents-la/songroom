@@ -1,3 +1,44 @@
 :host {
   display: block;
 }
+
+.small {
+  font-size: 0.8em;
+}
+
+#controls {
+  background: #444;
+  color: white;
+}
+
+.songlisting {
+  line-height: 40px;
+  height: 40px;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+.songlisting.selected {
+  background: #333;
+  color: white;
+}
+
+paper-tabs::shadow #selectionBar {
+  background-color: #333;
+}
+
+paper-tabs paper-tab {
+  background: #555;  
+  color: white;
+  font-weight: bold;
+  font-size: 1.1em;
+  transition: background-color 0.4s;
+}
+
+paper-tabs paper-tab::shadow #ink {
+  color: #333;
+}
+
+paper-tab.core-selected {
+  background: #222;
+}

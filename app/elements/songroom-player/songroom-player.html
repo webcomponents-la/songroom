@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
 
 <link rel="import" href="../cdg-player/cdg-player.html">
 
@@ -10,15 +12,46 @@
         display: block;
         position: relative;
       }
+      
+      #toast {
+        font-size: 2em;
+        text-align: center;
+        text-transform: none;
+        background: rgba(0,0,0,0.8);
+        font-family: Montserrat, sans-serif;
+      }
     </style>
     <firebase-element id="trackRef" location="https://songroom.firebaseio.com/testtrack" data="{{currentTrack}}"></firebase-element>
-    <cdg-player fit src="{{currentTrack.src}}" gsrc="{{currentTrack.gsrc}}" paused="{{currentTrack.paused}}"></cdg-player>
+    <cdg-player fit id="player" src="{{currentTrack.song.urls.src}}" gsrc="{{currentTrack.song.urls.gsrc}}" paused="{{currentTrack.paused}}" position="{{currentTrack.position}}"></cdg-player>
+    <template if="{{currentTrack.paused}}">
+      <div fit layout vertical center center-justified style="background: rgba(0,0,0,0.6)">
+        <core-icon style="width: 300px; height: 300px; color: white;" icon="av:pause"></core-icon>
+      </div>
+    </template>
+    <paper-toast id="toast" responsiveWidth="3000px" duration="3500"></paper-toast>
   </template>
   <script>
     (function () {
       'use strict';
 
       Polymer({
+        observe: {
+          'currentTrack.command': 'processCommand'
+        },
+        commands: {
+          seek: function(position) {
+            this.$.player.seek(position);
+            if (position === 0) {
+              return "rewound the song to the start";
+            } else {
+              return "jumped to a different part of the song";
+            }
+          },
+          togglePlayback: function() {
+            this.currentTrack.paused = !this.currentTrack.paused;
+            return this.currentTrack.paused ? "paused playback" : "resumed playback";
+          }
+        },
         goFullscreen: function() {
           if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.msFullscreenElement) {
             if (document.cancelFullScreen) { document.cancelFullScreen(); } 
@@ -30,6 +63,14 @@
             else if (this.msRequestFullscreen) { this.msRequestFullscreen(); }
             else if (this.mozRequestFullScreen) { this.mozRequestFullScreen(); }
             else if (this.webkitRequestFullscreen) { this.webkitRequestFullscreen(); }
+          }
+        },
+        processCommand: function() {
+          if (this.currentTrack.command) {
+            var message = this.commands[this.currentTrack.command.name].apply(this, this.currentTrack.command.args);
+            this.$.toast.text = this.currentTrack.command.user.name + " " + message;
+            this.$.toast.show();
+            this.currentTrack.command = null;
           }
         }
       });

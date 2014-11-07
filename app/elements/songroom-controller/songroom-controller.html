@@ -1,30 +1,61 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-from-right.html">
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 
-<polymer-element name="songroom-controller" attributes="currentTrack">
+<polymer-element name="songroom-controller" attributes="currentTrack tab" vertical layout>
   <template>
     <link rel="stylesheet" href="songroom-controller.css">
     <firebase-element id="trackRef" location="https://songroom.firebaseio.com/testtrack" data="{{currentTrack}}"></firebase-element>
-    
-    <core-icon icon="{{currentTrack.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
-    
-    <core-list data="{{songs}}" height="400" on-core-activate="{{songTapped}}">
-      <template>
-        <div style="line-height: 40px">
-          <b>{{model.title}}</b> ({{model.artist}})
+    <core-ajax auto url="/songs/songs.json" handleAs="json" response="{{songs}}"></core-ajax>
+    <section id="controls" horizontal layout center>
+      <core-icon icon="av:replay" on-tap="{{replay}}" style="width: 32px; height: 32px;"></core-icon>
+      <core-icon icon="{{currentTrack.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
+      <core-icon icon="av:skip-next" on-tap="{{skip}}" style="width: 32px; height: 32px;"></core-icon>
+      <div flex>
+        <div layout horizontal class="small">
+          <div flex><b>Someone</b> is performing</div>
+          <div>{{currentTrack.position | secondsToTime}} / 2:55</div>
         </div>
-      </template>
-    </core-list>
+        <div id="current-title">{{currentTrack.song.title}}</div>
+        <div id="current-artist" class="small">by <b>{{currentTrack.song.artist.name}}</b></div>
+      </div>
+    </section>
+    
+    <paper-tabs selected="{{tab}}" valueattr="name" transition="slide-from-right">
+      <paper-tab name="queue"><core-icon icon="list"></core-icon> Queue</paper-tab>
+      <paper-tab name="browse"><core-icon icon="search"></core-icon> Browse</paper-tab>
+    </paper-tabs>
+    
+    
+    <core-animated-pages flex selected="{{tab}}" valueattr="id">
+      <section id="queue">
+        This is the queue
+      </section>
+      <section id="browse">
+        <core-list fit data="{{songs}}" height="40" on-core-activate="{{songTapped}}">
+          <template>
+            <div class="{{ {selected: selected, songlisting: true} | tokenList }}">
+              <b>{{model.title}}</b> ({{model.artist.name}})
+            </div>
+          </template>
+        </core-list>
+      </section>
+    </core-animated-pages>
+
   </template>
   <script>
     (function () {
       'use strict';
       
       Polymer({
+        tab: 'queue',
         created: function() {
           this.songs = [
             {artist: "The Foundations", title: "Build Me Up Buttercup", src: "/songs/test.mp3", gsrc: "/songs/test.cdg"},
@@ -32,15 +63,36 @@
           ]
         },
         togglePlayback: function() {
-          this.currentTrack.paused = !this.currentTrack.paused;
+          this.currentTrack.command = {
+            name: "togglePlayback",
+            args: [],
+            user: {name: "Michael"}
+          }
         },
         playbackIcon: function(paused) {
           return paused ? 'av:play-arrow' : 'av:pause';
         },
         songTapped: function(e, detail){
+          this.currentTrack.song = detail.data;
           this.currentTrack.paused = true;
-          this.currentTrack.src = detail.data.src;
-          this.currentTrack.gsrc = detail.data.gsrc;
+        },
+        secondsToTime: function(seconds) {
+          seconds = Math.floor(seconds || 0);
+          var minutes = Math.floor(seconds / 60);
+          seconds = seconds % 60;
+          var out = seconds.toString();
+          if (seconds < 10) out = "0" + out;
+          return minutes.toString() + ":" + out;
+        },
+        replay: function() {
+          this.currentTrack.command = {
+            name: 'seek',
+            args: [0],
+            user: {name: 'Michael'}
+          };
+        },
+        skip: function() {
+          // todo
         }
       });
 
