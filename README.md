@@ -50,6 +50,18 @@ This project uses Travis CI for continuous deployment to Divshot. Because there
 are presently no tests, `master` deploys to the `development` environment, with
 `staging` and `production` branches.
 
+## Contributing
+
+This is meant to be a community project, however to maximize both sanity and
+learning experiences, we're going to do *everything* via pull requests.
+
+Take a look at the [issues page](https://github.com/webcomponents-la/songroom) for
+ideas of things to work on (or submit a new issue for something you want to
+work on), then fork, create a topic branch, and submit a pull request.
+
+We'll do our best to do code reviews and not only help get the features shipped
+but help teach more about how to do Web Components apps right.
+
 ## License
 
 The MIT License (MIT)
