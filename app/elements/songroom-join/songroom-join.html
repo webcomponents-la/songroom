@@ -190,7 +190,7 @@
           }, function() {
             this.prefs.roomCode = newid;
             window.location.hash = "#/rooms/" + newid + "/created";
-          });
+          }.bind(this));
 
         }
       });
