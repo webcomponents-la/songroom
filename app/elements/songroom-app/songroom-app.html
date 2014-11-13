@@ -2,6 +2,8 @@
 <link rel="import" href="../../bower_components/app-router/app-router.html">
 <link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
+<link rel="import" href="../../bower_components/firebase-element/firebase-login.html">
 
 <polymer-element name="songroom-app" attributes="roomid" on-app-notify="{{showNotification}}">
   <template>
@@ -23,6 +25,9 @@
         text-align: center;
       }
     </style>
+
+    <pvc-globals values="{{globals}}"></pvc-globals>
+    <firebase-login id="auth" location="https://songroom.firebaseio.com/" autoLogin="true" provider="anonymous" user="{{globals.user}}" on-login="{{logit}}" on-error="{{logit}}"></firebase-login>
 
     <core-header-panel id="interface" fit>
       <div id="titlebar" class="core-header">Songroom</div>
@@ -49,6 +54,9 @@
         showNotification: function(e, message) {
           this.$.toast.text = message;
           this.$.toast.show();
+        },
+        logit: function() {
+          console.log(arguments);
         }
       });
 

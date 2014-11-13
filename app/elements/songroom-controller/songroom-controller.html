@@ -42,8 +42,8 @@
           <queue-listing entry="{{entry}}"></queue-listing>
         </template>
       </section>
-      <section id="browse">
-        <core-list fit data="{{songs}}" height="64" on-core-activate="{{songTapped}}" selectionEnabled="false">
+      <section id="browse" layout vertical flex>
+        <core-list id="list" flex height="64" data="{{songs}}">
           <template>
             <song-listing song="{{model}}" on-enqueue="{{handleEnqueue}}"></song-listing>
           </template>
@@ -61,6 +61,9 @@
         observe: {
           'room.queuePosition': 'queuePositionChanged',
           '$.roomRef.dataReady': 'checkExistence'
+        },
+        tabChanged: function() {
+          if (this.tab === 'browse') this.$.list.updateSize();
         },
         handleEnqueue: function(e, song) {
           this.$.queueRef.push({
@@ -80,10 +83,6 @@
           this.songs = [];
         },
         checkExistence: function() {
-          console.log('roomid', this.$.roomRef.location);
-          console.log('dataReady', this.$.roomRef.dataReady);
-          console.log('room', this.room);
-          console.log('data', this.$.roomRef.data);
           if (this.roomid && this.$.roomRef.dataReady && !this.room) {
             this.fire('app-notify', 'Room "' + this.roomid + '" does not exist.');
             window.location.hash = '#/';

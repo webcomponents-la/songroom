@@ -48,10 +48,10 @@
 
       Polymer({
         launchPlayer: function() {
-          window.location = "/player.html?room=" + this.roomid
+          window.location = "/player.html?room=" + this.roomid;
         },
         launchPerformer: function() {
-          window.location.hash = "#/"
+          window.location.hash = "#/rooms/" + this.roomid;
         }
       });
 
