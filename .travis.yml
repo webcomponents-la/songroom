@@ -1,0 +1,17 @@
+language: node_js
+sudo: false
+before_install: npm install -g grunt-cli
+install: npm install && bower install
+script: grunt build:dist
+cache:
+  directories:
+    - .divshot-cache
+    - node_modules
+    - app/bower_components
+deploy:
+  provider: divshot
+  environment:
+    master: development
+    staging: staging
+    produciton: production
+  skip_cleanup: true
