@@ -5,4 +5,7 @@ body {
 #titlebar {
   background: #673AB7;
   color: white;
+  line-height: 42px;
+  height: 42px;
+  padding: 0 8px;
 }

@@ -1,0 +1,72 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+
+<polymer-element name="song-listing" attributes="song starred">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .songlisting {
+        height: 64px;
+        overflow: hidden;
+        padding: 0 0 0 8px;
+      }
+
+      .songlisting .info span {
+        display: block;
+      }
+
+      .songlisting .info .title {
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+
+      .songlisting .info .artist {
+        font-size: 0.9em;
+        font-weight: normal;
+      }
+
+      /* .songlisting.selected {
+        background: #333;
+        color: white;
+      } */
+
+      .songlisting .actions core-icon {
+        width: 32px;
+        height: 32px;
+        margin: 8px;
+      }
+    </style>
+
+    <div class="songlisting" horizontal layout>
+      <div class="info" flex vertical layout center-justified>
+        <span class="title">{{song.title}}</span>
+        <span class="artist">{{song.artist.name}}</span>
+      </div>
+      <div class="actions" horizontal layout center>
+        <core-icon icon="{{ starred | starIcon }}" on-tap="{{ toggleStar }}"></core-icon>
+        <core-icon icon="add" on-tap="{{ enqueue }}"></core-icon>
+      </div>
+    </div>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        toggleStar: function() {
+          this.starred = !this.starred
+        },
+        enqueue: function() {
+          this.fire('enqueue', this.song);
+        },
+        starIcon: function(status) {
+          return status ? 'star' : 'star-outline';
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

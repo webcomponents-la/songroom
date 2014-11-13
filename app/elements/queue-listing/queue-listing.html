@@ -1,0 +1,60 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="queue-listing" attributes="entry">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .queuelisting {
+        height: 64px;
+        overflow: hidden;
+      }
+
+      .queuelisting .info span {
+        display: block;
+      }
+
+      .queuelisting .info .title {
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+
+      .queuelisting .info .artist {
+        font-size: 0.9em;
+        font-weight: normal;
+      }
+
+      /* .queuelisting.selected {
+        background: #333;
+        color: white;
+      } */
+
+      .queuelisting core-icon {
+        width: 32px;
+        height: 32px;
+        margin: 8px;
+      }
+    </style>
+
+    <div class="queuelisting" horizontal layout center>
+      <core-icon icon="reorder"></core-icon>
+      <div class="info" flex vertical layout center-justified>
+        <span class="title">{{entry.song.title}}</span>
+        <span class="artist">{{entry.song.artist.name}}</span>
+      </div>
+      <core-icon icon="clear" on-tap="{{ removeFromQueue }}"></core-icon>
+    </div>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        // define element prototype here
+      });
+
+    })();
+  </script>
+</polymer-element>

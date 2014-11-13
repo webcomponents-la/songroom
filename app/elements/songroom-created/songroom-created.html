@@ -1,0 +1,60 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/core-icons/hardware-icons.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
+
+<polymer-element name="songroom-created" attributes="roomid">
+  <template>
+    <style>
+      :host {
+        display: block;
+        text-align: center;
+        max-width: 480px;
+        padding: 10px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-transform: uppercase;
+        margin: 10px 0 15px;
+        font-size: 2.5em;
+      }
+
+      paper-button {
+        display: block;
+        background: #333;
+        color: white;
+        margin: 0 0 10px 0;
+      }
+    </style>
+
+    <p>Your Room Code</p>
+    <h1>{{roomid}}</h1>
+
+    <p style="text-align: left;">You'll need to set up a device to play the music and display lyrics. If this isn't that device, use the room code above and get started on another!</p>
+
+    <paper-button on-tap="{{launchPlayer}}" name="player">
+      <core-icon icon="hardware:tv"></core-icon>
+      Launch Player
+    </paper-button>
+    <paper-button on-tap="{{launchPerformer}}" name="performer">
+      <core-icon icon="av:mic"></core-icon>
+      Join as Performer
+    </paper-button>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        launchPlayer: function() {
+          window.location = "/player.html?room=" + this.roomid
+        },
+        launchPerformer: function() {
+          window.location.hash = "#/"
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

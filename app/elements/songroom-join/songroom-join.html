@@ -1,0 +1,192 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/core-selector/core-selector.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../bower_components/core-icons/hardware-icons.html">
+<link rel="import" href="../../bower_components/core-localstorage/core-localstorage.html">
+
+<polymer-element name="songroom-join" attributes="joinType joinCache" flex>
+  <template>
+    <style>
+      :host {
+        display: block;
+        max-width: 480px;
+        padding: 1em;
+        margin: 0 auto;
+      }
+
+      #container {
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      #roomInput, #nameField {
+        font-size: 1.4em;
+        text-align: center;
+        display: block;
+        margin: 0 10px;
+        text-transform: uppercase;
+        width: auto;
+      }
+
+      #roomInput::shadow #input, #nameField::shadow #input {
+        text-align: center;
+      }
+
+      #buttonJoin {
+        transition: background-color 0.3s;
+        color: white;
+      }
+
+      #typePicker {
+        padding: 1em;
+      }
+
+      #typePicker paper-button {
+        display: block;
+        background: #333;
+        color: white;
+        margin-bottom: 10px;
+      }
+
+      #typePicker core-icon {
+        margin-right: 8px;
+      }
+
+      #typePicker p {
+        font-size: 1.3em;
+      }
+
+      #buttonCreate {
+        background: #333;
+        color: white;
+      }
+
+      #colorPicker {
+        margin: 10px 0;
+      }
+
+      .colorTile {
+        width: 45px;
+        height: 45px;
+        border-radius: 24px;
+        display: inline-block;
+        border: 3px solid transparent;
+        margin: 3px;
+      }
+
+      .colorTile.core-selected {
+        border: 3px solid black;
+      }
+
+      .desc {
+        text-align: center;
+        font-size: 1.2em;
+        margin: 0.5em 0;
+        text-transform: uppercase;
+      }
+    </style>
+
+    <div id="container" layout vertical fit>
+      <template if="{{!joinType}}">
+        <div id="typePicker" vertical layout>
+          <p>Welcome to Songroom, the cloud karaoke party! How do you want to connect?</p>
+          <paper-button on-tap="{{selectJoinType}}" name="player">
+            <core-icon icon="hardware:tv"></core-icon>
+            Playback Screen
+          </paper-button>
+          <paper-button on-tap="{{selectJoinType}}" name="performer">
+            <core-icon icon="av:mic"></core-icon>
+            Performer Controls
+          </paper-button>
+          <paper-button on-tap="{{createRoom}}" name="performer">
+            <core-icon icon="av:queue"></core-icon>
+            Create a New Room
+          </paper-button>
+        </div>
+      </template>
+      <template if="{{joinType}}">
+        <paper-tabs valueattr="name" selected="{{joinType}}">
+          <paper-tab name="player"><core-icon icon="hardware:tv"></core-icon> Playback</paper-tab>
+          <paper-tab name="performer"><core-icon icon="av:mic"></core-icon> Performer</paper-tab>
+        </paper-tabs>
+        <div id="joinForm" layout vertical flex>
+          <paper-input id="roomInput" label="Room Code" maxlength="6" value="{{joinCache.roomid}}"></paper-input>
+          <template if="{{ joinType == 'performer' }}">
+            <paper-input id="nameField" label="Enter Your Name" value="{{joinCache.name}}"></paper-input>
+            <p class="desc">Pick A Color</p>
+            <core-selector id="colorPicker" valueattr="color" selected="{{joinCache.color}}" horizontal layout wrap center-justified>
+              <template repeat="{{color in userColors}}"><div class="colorTile" title="{{color.name}}" color="{{color.value}}" style="background: {{color.value}};"></paper-item></template>
+            </core-selector>
+          </template>
+          <paper-button id="buttonJoin" on-click="{{joinRoom}}" style="background-color: {{joinCache.color}}">Join Room</paper-button>
+          <p class="desc">Need to start a new room?</p>
+          <paper-button id="buttonCreate" on-click="{{createRoom}}"><core-icon icon="av:queue"></core-icon> Create A New Room</paper-button>
+        </div>
+      </template>
+    </div>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      var LETTERS = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split(' ');
+
+      Polymer({
+        joinType: null,
+        userColors: [
+          {name: 'Red',         value: '#F44336'},
+          {name: 'Pink',        value: '#E91E63'},
+          {name: 'Purple',      value: '#9C27B0'},
+          {name: 'Deep Purple', value: '#673AB7'},
+          {name: 'Indigo',      value: '#3F51B5'},
+          {name: 'Blue',        value: '#2196F3'},
+          {name: 'Light Blue',  value: '#03A9F4'},
+          {name: 'Cyan',        value: '#00BCD4'},
+          {name: 'Teal',        value: '#009688'},
+          {name: 'Green',       value: '#4CAF50'},
+          {name: 'Light Green', value: '#8BC34A'},
+          {name: 'Deep Orange', value: '#FF5722'},
+        ],
+        selectedColor: '#9C27B0',
+        ready: function() {
+
+        },
+        selectJoinType: function(e) {
+          this.joinType = e.currentTarget.getAttribute("name");
+        },
+        launchPlayer: function() {
+          window.location = "/player.html?roomid=" + this.$.roomInput.value.toUpperCase();
+        },
+        joinRoom: function() {
+          window.location.hash = "#/rooms/" + this.$.roomInput.value.toUpperCase();
+        },
+        createRoom: function() {
+          var newid = "";
+          for(var i = 0; i < 6; i++) {
+            newid += LETTERS[Math.floor(Math.random() * 25)];
+          }
+
+
+          var roomRef = new Firebase("https://songroom.firebaseio.com/rooms/" + newid);
+          roomRef.set({
+            users: [],
+            queue: [],
+            queuePosition: null,
+            paused: true,
+            position: 0
+          }, function() {
+            this.persisted
+            window.location.hash = "#/rooms/" + newid + "/created";
+          });
+
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

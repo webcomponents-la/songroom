@@ -1,0 +1,57 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-router/app-router.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+<polymer-element name="songroom-app" attributes="roomid" on-app-notify="{{showNotification}}">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      body {
+        font-family: Montserrat, sans-serif;
+      }
+
+      #titlebar {
+        background: #673AB7;
+        color: white;
+        line-height: 42px;
+        height: 42px;
+        padding: 0 8px;
+        text-align: center;
+      }
+    </style>
+
+    <core-header-panel id="interface" fit>
+      <div id="titlebar" class="core-header">Songroom</div>
+      <section class="content">
+        <app-router fit>
+          <app-route path="/rooms/:roomid/created" element="songroom-created"></app-route>
+          <app-route path="/rooms/:roomid" element="songroom-controller"></app-route>
+          <app-route path="/" element="songroom-join"></app-route>
+          <app-route path="*">
+            <template>
+              <p>Page Not Found. Sorry!</p>
+            </template>
+          </app-route>
+        </app-router>
+      </section>
+    </core-header-panel>
+    <paper-toast id="toast"></paper-toast>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        showNotification: function(e, message) {
+          this.$.toast.text = message;
+          this.$.toast.show();
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>
