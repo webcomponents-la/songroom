@@ -5,9 +5,9 @@ install: npm install && bower install
 script: grunt build:dist
 cache:
   directories:
-    - .divshot-cache
-    - node_modules
-    - app/bower_components
+  - ".divshot-cache"
+  - node_modules
+  - app/bower_components
 deploy:
   provider: divshot
   environment:
@@ -15,3 +15,5 @@ deploy:
     staging: staging
     produciton: production
   skip_cleanup: true
+  api_key:
+    secure: BuUclicBTqmyiEOLkZ8sEuZxOdv9W5Zf3dKHQJFeeXIvwBB7XaRjS5QOw6JERt4ifF4etRxKFpTaw9KFiXGBMJJ2eVxNSVK836Uc8DFmmt8W3MpO8s3iqxMlAEZZrKO7Dmv++LZMf8Luk1/882ENlL4rllwXSsstHfvMuUdx9rA=
