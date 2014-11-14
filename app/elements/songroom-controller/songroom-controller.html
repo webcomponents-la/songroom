@@ -63,7 +63,9 @@
           '$.roomRef.dataReady': 'checkExistence'
         },
         tabChanged: function() {
-          if (this.tab === 'browse') this.$.list.updateSize();
+          if (this.tab === 'browse') {
+            this.async(function(){ this.$.list.updateSize() });
+          }
         },
         handleEnqueue: function(e, song) {
           this.$.queueRef.push({
