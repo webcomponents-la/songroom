@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="queue-listing" attributes="entry">
+<polymer-element name="queue-listing" attributes="location data">
   <template>
     <style>
       :host {
@@ -17,12 +17,12 @@
       }
 
       .queuelisting .info .title {
-        font-size: 1.2em;
+        font-size: 1.1em;
         font-weight: bold;
       }
 
       .queuelisting .info .artist {
-        font-size: 0.9em;
+        font-size: 0.8em;
         font-weight: normal;
       }
 
@@ -36,14 +36,21 @@
         height: 32px;
         margin: 8px;
       }
+
+      performer-icon {
+        margin-right: 10px;
+      }
     </style>
 
     <div class="queuelisting" horizontal layout center>
-      <core-icon icon="reorder"></core-icon>
+      <template repeat="{{performer in data.performers}}">
+        <performer-icon performer="{{performer}}"></performer-icon>
+      </template>
       <div class="info" flex vertical layout center-justified>
-        <span class="title">{{entry.song.title}}</span>
-        <span class="artist">{{entry.song.artist.name}}</span>
+        <span class="title">{{data.song.title}}</span>
+        <span class="artist">{{data.song.artist.name}}</span>
       </div>
+      <!--<core-icon icon="reorder"></core-icon>-->
       <core-icon icon="clear" on-tap="{{ removeFromQueue }}"></core-icon>
     </div>
   </template>
@@ -52,7 +59,9 @@
       'use strict';
 
       Polymer({
-        // define element prototype here
+        removeFromQueue: function() {
+          new Firebase(this.location).remove();
+        }
       });
 
     })();

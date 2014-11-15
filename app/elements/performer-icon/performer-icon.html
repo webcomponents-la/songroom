@@ -1,0 +1,34 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="performer-icon" attributes="performer">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        width: 64px;
+        height: 64px;
+        color: white;
+        background-color: #333;
+      }
+    </style>
+    <div fit horizontal layout center center-justified>{{ performer.name | initial }}</div>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        attached: function() {
+          if (this.performer) this.style.backgroundColor = this.performer.color;
+          this.style.fontSize = this.getBoundingClientRect().height / 2 + "px";
+        },
+        initial: function(name) {
+          if (!name) { return "👻" }
+          return name.substr(0,1);
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

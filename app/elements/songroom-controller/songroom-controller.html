@@ -8,12 +8,15 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
 <polymer-element name="songroom-controller" attributes="roomid currentTrack tab" vertical layout fit>
   <template>
     <link rel="stylesheet" href="songroom-controller.css">
+    <pvc-globals values="{{globals}}"></pvc-globals>
     <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}" data="{{room}}"></firebase-element>
     <firebase-element id="queueRef" childEvents location="https://songroom.firebaseio.com/rooms/{{roomid}}/queue" keys="{{queueKeys}}" data="{{queue}}"></firebase-element>
+    <firebase-element id="userRef" location="https://songroom.firebaseio.com/users/{{globals.user.uid}}" data="{{user}}"></firebase-element>
     <core-ajax auto url="/songs/songs.json" handleAs="json" response="{{songs}}"></core-ajax>
 
     <section id="controls" horizontal layout center>
@@ -38,8 +41,8 @@
 
     <core-animated-pages flex selected="{{tab}}" valueattr="id">
       <section id="queue">
-        <template repeat="{{entry in queueKeys | keysToItems}}">
-          <queue-listing entry="{{entry}}"></queue-listing>
+        <template repeat="{{key in queueKeys}}">
+          <queue-listing data="{{queue[key]}}" location="{{$.queueRef.location}}/{{key}}"></queue-listing>
         </template>
       </section>
       <section id="browse" layout vertical flex>
@@ -69,7 +72,10 @@
         },
         handleEnqueue: function(e, song) {
           this.$.queueRef.push({
-            song: song
+            song: song,
+            performers: [
+              {name: this.user.name, color: this.user.color, id: this.globals.user.uid}
+            ]
           });
           this.fire('app-notify', '"' + song.title + '" was added to the queue.');
         },
