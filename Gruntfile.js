@@ -160,8 +160,11 @@ module.exports = function (grunt) {
           strip: true
         },
         files: {
-          '<%= yeoman.dist %>/elements/elements.vulcanized.html': [
-            '<%= yeoman.dist %>/elements/elements.html'
+          '<%= yeoman.dist %>/elements/controller-elements.vulcanized.html': [
+            '<%= yeoman.dist %>/elements/controller-elements.html'
+          ],
+          '<%= yeoman.dist %>/elements/player-elements.vulcanized.html': [
+            '<%= yeoman.dist %>/elements/player-elements.html'
           ]
         }
       }
@@ -221,7 +224,8 @@ module.exports = function (grunt) {
             'elements/**',
             '!elements/**/*.css',
             'images/{,*/}*.{webp,gif}',
-            'bower_components/**'
+            'bower_components/**',
+            'songs/songs.json'
           ]
         }]
       },
