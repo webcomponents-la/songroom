@@ -5,14 +5,14 @@
 
 <link rel="import" href="../cdg-player/cdg-player.html">
 
-<polymer-element name="songroom-player" attributes="currentTrack" on-dblclick="{{goFullscreen}}">
+<polymer-element name="songroom-player" attributes="room queue queueKeys currentTrack playback playbackPaused" on-dblclick="{{goFullscreen}}">
   <template>
     <style>
       :host {
         display: block;
         position: relative;
       }
-      
+
       #toast {
         font-size: 2em;
         text-align: center;
@@ -20,12 +20,44 @@
         background: rgba(0,0,0,0.8);
         font-family: Montserrat, sans-serif;
       }
+
+      .banner {
+        font-size: 2.5em;
+        background: #673AB7;
+        color: white;
+        text-align: center;
+      }
+
+      .banner h1 {
+        font-size: 3em;
+      }
+
+      .banner h1 small {
+        font-size: 0.5em;
+        text-transform: uppercase;
+        display: block;
+      }
     </style>
-    <firebase-element id="trackRef" location="https://songroom.firebaseio.com/testtrack" data="{{currentTrack}}"></firebase-element>
-    <cdg-player fit id="player" src="{{currentTrack.song.urls.src}}" gsrc="{{currentTrack.song.urls.gsrc}}" paused="{{currentTrack.paused}}" position="{{currentTrack.position}}"></cdg-player>
-    <template if="{{currentTrack.paused}}">
+    <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}" data="{{room}}"></firebase-element>
+    <firebase-element id="queueRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/queue" childEvents keys="{{queueKeys}}" data="{{queue}}" on-child-added="{{trackChanged}}" on-child-removed="{{trackChanged}}" on-child-changed="{{trackChanged}}"></firebase-element>
+    <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/playback" data="{{playback}}"></firebase-element>
+
+    <cdg-player fit id="player" src="{{currentTrack.song.urls.src}}" gsrc="{{currentTrack.song.urls.gsrc}}" paused="{{playbackPaused}}" position="{{playback.position}}"></cdg-player>
+    <template if="{{playback.paused}}">
       <div fit layout vertical center center-justified style="background: rgba(0,0,0,0.6)">
         <core-icon style="width: 300px; height: 300px; color: white;" icon="av:pause"></core-icon>
+      </div>
+    </template>
+    <template if="{{!currentTrack}}">
+      <div id="empty" class="banner" fit layout vertical center center-justified>
+        <h1><small>Room Code</small>{{roomId}}</h1>
+        <p>Visit <b>songroom.tv</b> to start the party!</p>
+      </div>
+    </template>
+    <template if="{{playback.banner}}">
+      <div id="nextplay" class="banner" style="background-color: {{ currentTrack | songColor }};" fit layout vertical center center-justified>
+        <h1><small>Up Next</small>{{currentTrack.performers | listNames}}</h1>
+        <p>performing <b>{{currentTrack.song.title}}</b></p>
       </div>
     </template>
     <paper-toast id="toast" responsiveWidth="3000px" duration="3500"></paper-toast>
@@ -35,8 +67,14 @@
       'use strict';
 
       Polymer({
+        playbackPaused: false,
+        created: function() {
+          this.roomId = window.location.search.match(/room=([^&]+)/i)[1];
+        },
         observe: {
-          'currentTrack.command': 'processCommand'
+          'room.command': 'processCommand',
+          'room.queuePosition': 'trackChanged',
+          'playback playback.paused playback.banner': 'handlePlayback'
         },
         commands: {
           seek: function(position) {
@@ -48,30 +86,65 @@
             }
           },
           togglePlayback: function() {
-            this.currentTrack.paused = !this.currentTrack.paused;
-            return this.currentTrack.paused ? "paused playback" : "resumed playback";
+            this.playback.paused = !this.playback.paused;
+            return this.playback.paused ? "paused playback" : "resumed playback";
+          },
+          track: function(queuePosition) {
+            this.playTrack(queuePosition);
+            return "changed the current song";
+          }
+        },
+        handlePlayback: function() {
+          console.log(this.playback.paused, this.playback.banner);
+          this.playbackPaused = this.playback.paused || this.playback.banner;
+        },
+        playTrack: function(queuePosition) {
+          this.queuePosition = queuePosition;
+          this.playback = {
+            paused: false,
+            position: 0,
+            banner: true
+          };
+          this.async(function() {
+            this.playback.banner = false;
+            this.playback.paused = false;
+          }, null, 8000);
+        },
+        trackChanged: function() {
+          if (!this.queueKeys){ return; }
+          var newTrack = this.queue[this.queueKeys[this.room.queuePosition]];
+          if (newTrack && this.queueKeys && newTrack !== this.currentTrack) {
+            this.currentTrack = newTrack;
           }
         },
         goFullscreen: function() {
           if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.msFullscreenElement) {
-            if (document.cancelFullScreen) { document.cancelFullScreen(); } 
+            if (document.cancelFullScreen) { document.cancelFullScreen(); }
             else if (document.msCancelFullscreen) { document.msCancelFullscreen(); }
             else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
             else if (document.webkitCancelFullScreen) { document.webkitCancelFullScreen(); }
           } else {
-            if (this.requestFullscreen) { this.requestFullscreen(); } 
+            if (this.requestFullscreen) { this.requestFullscreen(); }
             else if (this.msRequestFullscreen) { this.msRequestFullscreen(); }
             else if (this.mozRequestFullScreen) { this.mozRequestFullScreen(); }
             else if (this.webkitRequestFullscreen) { this.webkitRequestFullscreen(); }
           }
         },
         processCommand: function() {
-          if (this.currentTrack.command) {
-            var message = this.commands[this.currentTrack.command.name].apply(this, this.currentTrack.command.args);
-            this.$.toast.text = this.currentTrack.command.user.name + " " + message;
+          console.log(this.room.command);
+          if (this.room && this.room.command) {
+            var message = this.commands[this.room.command.name].apply(this, this.room.command.args);
+            this.$.toast.style.backgroundColor = this.room.command.user.color || "black";
+            this.$.toast.text = this.room.command.user.name + " " + message;
             this.$.toast.show();
-            this.currentTrack.command = null;
+            this.room.command = null;
           }
+        },
+        listNames: function(performers) {
+          return performers.map(function(p){ return p.name; }).join(', ');
+        },
+        songColor: function(track) {
+          return track.performers[0].color || "black";
         }
       });
 

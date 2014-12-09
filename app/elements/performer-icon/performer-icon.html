@@ -8,6 +8,7 @@
         position: relative;
         width: 64px;
         height: 64px;
+        font-size: 32px;
         color: white;
         background-color: #333;
       }
@@ -21,7 +22,7 @@
       Polymer({
         attached: function() {
           if (this.performer) this.style.backgroundColor = this.performer.color;
-          this.style.fontSize = this.getBoundingClientRect().height / 2 + "px";
+          // this.style.fontSize = this.getBoundingClientRect().height / 2 + "px";
         },
         initial: function(name) {
           if (!name) { return "👻" }

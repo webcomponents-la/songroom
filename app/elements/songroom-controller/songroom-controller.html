@@ -10,36 +10,39 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
-<polymer-element name="songroom-controller" attributes="roomid currentTrack tab" vertical layout fit>
+<polymer-element name="songroom-controller" attributes="roomid currentTrack tab playback" vertical layout fit>
   <template>
     <link rel="stylesheet" href="songroom-controller.css">
     <pvc-globals values="{{globals}}"></pvc-globals>
     <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}" data="{{room}}"></firebase-element>
+    <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}/playback" data="{{playback}}"></firebase-element>
     <firebase-element id="queueRef" childEvents location="https://songroom.firebaseio.com/rooms/{{roomid}}/queue" keys="{{queueKeys}}" data="{{queue}}"></firebase-element>
     <firebase-element id="userRef" location="https://songroom.firebaseio.com/users/{{globals.user.uid}}" data="{{user}}"></firebase-element>
     <core-ajax auto url="/songs/songs.json" handleAs="json" response="{{songs}}"></core-ajax>
 
-    <section id="controls" horizontal layout center>
-      <core-icon icon="av:replay" on-tap="{{replay}}" style="width: 32px; height: 32px;"></core-icon>
-      <core-icon icon="{{currentTrack.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
-      <core-icon icon="av:skip-next" on-tap="{{skip}}" style="width: 32px; height: 32px;"></core-icon>
-      <div flex>
-        <div layout horizontal class="small">
-          <div flex><b>Someone</b> is performing</div>
-          <div>{{currentTrack.position | secondsToTime}} / 2:55</div>
+    <template if="{{currentTrack}}">
+      <section id="controls" horizontal layout center>
+        <core-icon icon="av:replay" on-tap="{{replay}}" style="width: 32px; height: 32px;"></core-icon>
+        <core-icon icon="{{playback.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
+        <core-icon icon="av:skip-next" on-tap="{{skip}}" style="width: 32px; height: 32px;"></core-icon>
+        <div flex>
+          <div layout horizontal class="small">
+            <div flex><b>{{currentTrack.performers | performerList}}</b> is performing</div>
+            <div>{{playback.position | secondsToTime}} / 2:55</div>
+          </div>
+          <div id="current-title">{{currentTrack.song.title}}</div>
+          <div id="current-artist" class="small">by <b>{{currentTrack.song.artist.name}}</b></div>
         </div>
-        <div id="current-title">{{currentTrack.song.title}}</div>
-        <div id="current-artist" class="small">by <b>{{currentTrack.song.artist.name}}</b></div>
-      </div>
-    </section>
+      </section>
+    </template>
 
-    <paper-tabs selected="{{tab}}" valueattr="name" transition="slide-from-right">
+    <paper-tabs selected="{{tab}}" valueattr="name">
       <paper-tab name="queue"><core-icon icon="list"></core-icon> Queue</paper-tab>
       <paper-tab name="browse"><core-icon icon="search"></core-icon> Browse</paper-tab>
     </paper-tabs>
 
 
-    <core-animated-pages flex selected="{{tab}}" valueattr="id">
+    <core-animated-pages flex selected="{{tab}}" valueattr="id" transition="slide-from-right">
       <section id="queue">
         <template repeat="{{key in queueKeys}}">
           <queue-listing data="{{queue[key]}}" location="{{$.queueRef.location}}/{{key}}"></queue-listing>
@@ -62,7 +65,7 @@
       Polymer({
         tab: 'queue',
         observe: {
-          'room.queuePosition': 'queuePositionChanged',
+          'room.queuePosition queueKeys': 'queuePositionChanged',
           '$.roomRef.dataReady': 'checkExistence'
         },
         tabChanged: function() {
@@ -100,12 +103,12 @@
           this.room.command = {
             name: "togglePlayback",
             args: [],
-            user: {name: "Michael"}
+            user: this.user
           }
         },
         queuePositionChanged: function() {
           if (this.room) {
-            this.currentTrack = this.queue[this.room.queuePosition];
+            this.currentTrack = this.queue[this.queueKeys[this.room.queuePosition]];
           }
         },
         playbackIcon: function(paused) {
@@ -129,15 +132,28 @@
 
           return out;
         },
+        performerList: function(performers) {
+          if (!performers){ return 'Someone'; }
+          return performers.map(function(p){ return p.name }).join(', ');
+        },
         replay: function() {
+          console.log("REPLAY");
           this.room.command = {
             name: 'seek',
             args: [0],
-            user: {name: 'Michael'}
+            user: this.user
           };
         },
         skip: function() {
-          // todo
+          if (this.queueKeys.length >= this.room.queuePosition + 2) {
+            this.room.command = {
+              name: 'track',
+              args: [this.room.queuePosition++],
+              user: this.user
+            }
+          } else {
+            this.fire('app-notify', 'No songs left in queue!');
+          }
         }
       });
 

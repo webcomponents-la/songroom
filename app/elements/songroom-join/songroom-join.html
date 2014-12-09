@@ -160,6 +160,7 @@
           {name: 'Deep Orange', value: '#FF5722'},
         ],
         prefsChanged: function() {
+          console.log(this.prefs);
           if (this.$.prefsRef.initialized && this.$.prefsRef === null) {
             this.$.prefsRef = {};
           }
@@ -168,7 +169,7 @@
           this.joinType = e.currentTarget.getAttribute("name");
         },
         launchPlayer: function() {
-          window.location = "/player.html?roomid=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+          window.location = "/player.html?room=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
         },
         joinRoom: function() {
           console.log(this.$);
@@ -183,10 +184,14 @@
           var roomRef = new Firebase("https://songroom.firebaseio.com/rooms/" + newid);
           roomRef.set({
             users: [],
-            queue: [],
-            queuePosition: null,
+            queue: {},
+            queuePosition: 0,
             paused: true,
-            position: 0
+            createdAt: new Date().getTime(),
+            playback: {
+              position: 0,
+              paused: true
+            }
           }, function() {
             this.prefs.roomCode = newid;
             window.location.hash = "#/rooms/" + newid + "/created";

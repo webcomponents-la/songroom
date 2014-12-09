@@ -7,3 +7,4 @@ app/bower_components
 .tmp
 test/bower_components
 app/songs
+.divshot-cache

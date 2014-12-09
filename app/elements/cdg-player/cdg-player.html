@@ -9,7 +9,7 @@
         position: relative;
       }
     </style>
-    <audio id="audio" src="{{src}}"></audio>
+    <audio id="audio" src="{{src}}" on-ended="{{passEvent}}"></audio>
     <cdg-canvas fit id="canvas" src="{{gsrc}}"></cdg-canvas>
   </template>
   <script>
@@ -31,7 +31,7 @@
           this.paused = true;
         },
         srcChanged: function() {
-          this.pause();
+          // this.pause();
           this.$.canvas.position = 0;
         },
         pausedChanged: function(isPaused) {
@@ -54,6 +54,9 @@
         seek: function(pos) {
           console.log("Seeking", pos);
           this.$.audio.currentTime = pos;
+        },
+        passEvent: function(e) {
+
         }
       });
 

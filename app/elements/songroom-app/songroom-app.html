@@ -27,7 +27,7 @@
     </style>
 
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <firebase-login id="auth" location="https://songroom.firebaseio.com/" autoLogin="true" provider="anonymous" user="{{globals.user}}" on-login="{{logit}}" on-error="{{logit}}"></firebase-login>
+    <firebase-login id="auth" location="https://songroom.firebaseio.com/" autoLogin="true" provider="anonymous" user="{{globals.user}}" on-login="{{loggedIn}}" on-error="{{logit}}"></firebase-login>
 
     <core-header-panel id="interface" fit>
       <div id="titlebar" class="core-header">Songroom</div>
@@ -55,8 +55,15 @@
           this.$.toast.text = message;
           this.$.toast.show();
         },
-        logit: function() {
-          console.log(arguments);
+        loggedIn: function(e, details) {
+          var prefsRef = new Firebase('https://songroom.firebaseio.com/users/' + details.user.uid)
+          prefsRef.once('value', function(snapshot) {
+            if (!snapshot.val()) {
+              prefsRef.set({
+                roomCode: ''
+              });
+            }
+          });
         }
       });
 
