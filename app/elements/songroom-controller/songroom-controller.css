@@ -11,6 +11,11 @@
   color: white;
 }
 
+#controls.offline core-icon, #controls.offline .play-position {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 paper-tabs::shadow #selectionBar {
   background-color: #333;
 }

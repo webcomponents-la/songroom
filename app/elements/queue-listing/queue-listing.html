@@ -1,10 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="queue-listing" attributes="location data">
+<polymer-element name="queue-listing" attributes="location data current">
   <template>
     <style>
       :host {
         display: block;
+        color: white;
       }
 
       .queuelisting {
@@ -40,6 +41,8 @@
       performer-icon {
         margin-right: 10px;
       }
+
+
     </style>
 
     <div class="queuelisting" horizontal layout center>
@@ -59,8 +62,17 @@
       'use strict';
 
       Polymer({
+        current: false,
         removeFromQueue: function() {
-          new Firebase(this.location).remove();
+          this.fire('remove', this.data);
+        },
+        dataChanged: function() {
+          if (this.data && this.data.performers) {
+            this.style.backgroundColor = this.data.performers[0].color;
+            this.style.color = 'white';
+          } else {
+            this.style.backgroundColor = '#333';
+          }
         }
       });
 

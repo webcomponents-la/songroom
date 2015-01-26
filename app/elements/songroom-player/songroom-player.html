@@ -39,10 +39,10 @@
       }
     </style>
     <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}" data="{{room}}"></firebase-element>
-    <firebase-element id="queueRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/queue" childEvents keys="{{queueKeys}}" data="{{queue}}" on-child-added="{{trackChanged}}" on-child-removed="{{trackChanged}}" on-child-changed="{{trackChanged}}"></firebase-element>
-    <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/playback" data="{{playback}}"></firebase-element>
+    <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/playback" data="{{playback}}" on-data-ready="{{signalConnection}}"></firebase-element>
+    <firebase-list id="queueRef" orderByPriority location="https://songroom.firebaseio.com/rooms/{{roomid}}/queue" data="{{data}}"></firebase-list>
 
-    <cdg-player fit id="player" src="{{currentTrack.song.urls.src}}" gsrc="{{currentTrack.song.urls.gsrc}}" paused="{{playbackPaused}}" position="{{playback.position}}"></cdg-player>
+    <cdg-player fit id="player" src="{{currentTrack.song.urls.src}}" gsrc="{{currentTrack.song.urls.gsrc}}" paused="{{playbackPaused}}" position="{{playback.position}}" on-ended="{{trackEnded}}"></cdg-player>
     <template if="{{playback.paused}}">
       <div fit layout vertical center center-justified style="background: rgba(0,0,0,0.6)">
         <core-icon style="width: 300px; height: 300px; color: white;" icon="av:pause"></core-icon>
@@ -71,10 +71,22 @@
         created: function() {
           this.roomId = window.location.search.match(/room=([^&]+)/i)[1];
         },
+        signalConnection: function() {
+          this.playback.connected = true;
+          this.$.playbackRef.ref.onDisconnect().update({
+            connected: false,
+            paused: true
+          });
+        },
         observe: {
           'room.command': 'processCommand',
-          'room.queuePosition': 'trackChanged',
+          'room.currentTrack': 'trackChanged',
           'playback playback.paused playback.banner': 'handlePlayback'
+        },
+        trackEnded: function(key) {
+          var val = this.$.queueRef.keys.indexOf(key);
+          if (val > this.data.length) return null;
+          return this.$.ref.keys[val + 1];
         },
         commands: {
           seek: function(position) {
@@ -86,34 +98,46 @@
             }
           },
           togglePlayback: function() {
-            this.playback.paused = !this.playback.paused;
+            if (this.playback.banner) {
+              this.playback.banner = false;
+              this.playback.paused = false;
+            } else {
+              this.playback.paused = !this.playback.paused;
+            }
             return this.playback.paused ? "paused playback" : "resumed playback";
           },
-          track: function(queuePosition) {
-            this.playTrack(queuePosition);
+          track: function(newTrack) {
+            this.playTrack(newTrack);
             return "changed the current song";
           }
         },
         handlePlayback: function() {
-          console.log(this.playback.paused, this.playback.banner);
           this.playbackPaused = this.playback.paused || this.playback.banner;
         },
-        playTrack: function(queuePosition) {
-          this.queuePosition = queuePosition;
-          this.playback = {
+        playTrack: function(newTrack) {
+          this.$.playbackRef.ref.update({
             paused: false,
             position: 0,
-            banner: true
-          };
+            banner: true,
+            trackEnded: false
+          });
+          this.room.currentTrack = newTrack;
+
           this.async(function() {
             this.playback.banner = false;
             this.playback.paused = false;
           }, null, 8000);
         },
+        nextSong: function() {
+          this.currentTrack = this.room.currentTrack = null;
+        },
         trackChanged: function() {
-          if (!this.queueKeys){ return; }
-          var newTrack = this.queue[this.queueKeys[this.room.queuePosition]];
-          if (newTrack && this.queueKeys && newTrack !== this.currentTrack) {
+          if (!this.room['queue'] || !this.room.currentTrack) return;
+          var newTrack = this.room.queue[this.room.currentTrack];
+          if (!newTrack) {
+            this.currentTrack = null;
+            this.room.currentTrack = null;
+          } else if (newTrack !== this.currentTrack) {
             this.currentTrack = newTrack;
           }
         },
@@ -131,7 +155,6 @@
           }
         },
         processCommand: function() {
-          console.log(this.room.command);
           if (this.room && this.room.command) {
             var message = this.commands[this.room.command.name].apply(this, this.room.command.args);
             this.$.toast.style.backgroundColor = this.room.command.user.color || "black";
@@ -141,10 +164,14 @@
           }
         },
         listNames: function(performers) {
-          return performers.map(function(p){ return p.name; }).join(', ');
+          if (performers) {
+            return performers.map(function(p){ return p.name; }).join(', ');
+          }
         },
         songColor: function(track) {
-          return track.performers[0].color || "black";
+          if (track) {
+            return track.performers[0].color || "black";
+          }
         }
       });
 

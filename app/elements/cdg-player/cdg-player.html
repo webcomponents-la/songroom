@@ -34,14 +34,14 @@
           // this.pause();
           this.$.canvas.position = 0;
         },
-        pausedChanged: function(isPaused) {
-          if (isPaused) {
-            this.$.audio.play();
-            this.positionInterval = setInterval(this.render.bind(this), 1000 / this.framerate);
-          } else {
+        pausedChanged: function() {
+          if (this.paused) {
             this.$.audio.pause();
             clearInterval(this.positionInterval);
             this.positionInterval = null;
+          } else {
+            this.$.audio.play();
+            this.positionInterval = setInterval(this.render.bind(this), 1000 / this.framerate);
           }
         },
         render: function(){
@@ -56,7 +56,7 @@
           this.$.audio.currentTime = pos;
         },
         passEvent: function(e) {
-
+          this.fire(e.type, e.detail);
         }
       });
 

@@ -10,23 +10,24 @@
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
+<link rel="import" href="../songroom-queue/songroom-queue.html">
+
 <polymer-element name="songroom-controller" attributes="roomid currentTrack tab playback" vertical layout fit>
   <template>
     <link rel="stylesheet" href="songroom-controller.css">
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}" data="{{room}}"></firebase-element>
+    <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></firebase-element>
     <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}/playback" data="{{playback}}"></firebase-element>
-    <firebase-element id="queueRef" childEvents location="https://songroom.firebaseio.com/rooms/{{roomid}}/queue" keys="{{queueKeys}}" data="{{queue}}"></firebase-element>
     <firebase-element id="userRef" location="https://songroom.firebaseio.com/users/{{globals.user.uid}}" data="{{user}}"></firebase-element>
     <core-ajax auto url="/songs/songs.json" handleAs="json" response="{{songs}}"></core-ajax>
 
     <template if="{{currentTrack}}">
-      <section id="controls" horizontal layout center>
+      <section id="controls" horizontal layout center class="{{ {offline: !playback.connected} | tokenList}}">
         <core-icon icon="av:replay" on-tap="{{replay}}" style="width: 32px; height: 32px;"></core-icon>
-        <core-icon icon="{{playback.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
+        <core-icon icon="{{playback.banner || playback.paused | playbackIcon}}" on-tap="{{togglePlayback}}" style="width: 64px; height: 64px;"></core-icon>
         <core-icon icon="av:skip-next" on-tap="{{skip}}" style="width: 32px; height: 32px;"></core-icon>
         <div flex>
-          <div layout horizontal class="small">
+          <div layout horizontal class="small play-position">
             <div flex><b>{{currentTrack.performers | performerList}}</b> is performing</div>
             <div>{{playback.position | secondsToTime}} / 2:55</div>
           </div>
@@ -37,18 +38,16 @@
     </template>
 
     <paper-tabs selected="{{tab}}" valueattr="name">
-      <paper-tab name="queue"><core-icon icon="list"></core-icon> Queue</paper-tab>
-      <paper-tab name="browse"><core-icon icon="search"></core-icon> Browse</paper-tab>
+      <paper-tab name="tab-queue"><core-icon icon="list"></core-icon> Queue</paper-tab>
+      <paper-tab name="tab-browse"><core-icon icon="search"></core-icon> Browse</paper-tab>
     </paper-tabs>
 
 
-    <core-animated-pages flex selected="{{tab}}" valueattr="id" transition="slide-from-right">
-      <section id="queue">
-        <template repeat="{{key in queueKeys}}">
-          <queue-listing data="{{queue[key]}}" location="{{$.queueRef.location}}/{{key}}"></queue-listing>
-        </template>
+    <core-animated-pages flex selected="{{tab}}" valueattr="id" transitions="slide-from-right">
+      <section id="tab-queue">
+        <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" on-remove="{{trackRemoved}}"></songroom-queue>
       </section>
-      <section id="browse" layout vertical flex>
+      <section id="tab-browse" layout vertical flex>
         <core-list id="list" flex height="64" data="{{songs}}">
           <template>
             <song-listing song="{{model}}" on-enqueue="{{handleEnqueue}}"></song-listing>
@@ -63,9 +62,9 @@
       'use strict';
 
       Polymer({
-        tab: 'queue',
+        tab: 'tab-queue',
         observe: {
-          'room.queuePosition queueKeys': 'queuePositionChanged',
+          'room.currentTrack': 'trackChanged',
           '$.roomRef.dataReady': 'checkExistence'
         },
         tabChanged: function() {
@@ -73,13 +72,23 @@
             this.async(function(){ this.$.list.updateSize() });
           }
         },
+        trackRemoved: function(e, track) {
+          if (track.$key === this.room.currentTrack) {
+            this.skip();
+          }
+        },
         handleEnqueue: function(e, song) {
-          this.$.queueRef.push({
+          var performers = [
+            {name: this.user.name, color: this.user.color, id: this.globals.user.uid}
+          ];
+
+          var newRef = this.$.queue.push({
             song: song,
-            performers: [
-              {name: this.user.name, color: this.user.color, id: this.globals.user.uid}
-            ]
+            performers: performers
           });
+
+          if (!this.room.currentTrack){ this.room.currentTrack = newRef.key(); }
+
           this.fire('app-notify', '"' + song.title + '" was added to the queue.');
         },
         toggleFavorite: function(e) {
@@ -106,9 +115,16 @@
             user: this.user
           }
         },
-        queuePositionChanged: function() {
-          if (this.room) {
-            this.currentTrack = this.queue[this.queueKeys[this.room.queuePosition]];
+        trackChanged: function() {
+          console.log(this.room);
+          if (this.room.currentTrack) {
+            if (this.room.queue) {
+              this.currentTrack = this.room.queue[this.room.currentTrack];
+            } else {
+              this.room.currentTrack = null;
+            }
+          } else if (this.$.queue.data) {
+            this.room.currentTrack = this.$.queue.data[0].key;
           }
         },
         playbackIcon: function(paused) {
@@ -145,10 +161,11 @@
           };
         },
         skip: function() {
-          if (this.queueKeys.length >= this.room.queuePosition + 2) {
+          var nextTrack = this.$.queue.trackAfter(this.room.currentTrack);
+          if (nextTrack) {
             this.room.command = {
               name: 'track',
-              args: [this.room.queuePosition++],
+              args: [this.$.queue.trackAfter(this.room.currentTrack)],
               user: this.user
             }
           } else {
