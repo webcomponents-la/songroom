@@ -45,7 +45,7 @@
 
     <core-animated-pages flex selected="{{tab}}" valueattr="id" transitions="slide-from-right">
       <section id="tab-queue">
-        <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" on-remove="{{trackRemoved}}"></songroom-queue>
+        <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" paused?="{{playback.paused}}" on-remove="{{trackRemoved}}"></songroom-queue>
       </section>
       <section id="tab-browse" layout vertical flex>
         <core-list id="list" flex height="64" data="{{songs}}">

@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
 
-<polymer-element name="queue-listing" attributes="location data current">
+<polymer-element name="queue-listing" attributes="location data current paused">
   <template>
     <style>
       :host {
@@ -42,7 +44,21 @@
         margin-right: 10px;
       }
 
+      :host([current]) core-icon {
+        animation: pulsing ease-out 1s;
+        animation-iteration-count: infinite;
+      }
 
+      :host([current][paused]) core-icon {
+        animation: none;
+        animation-iteration-count: 0;
+      }
+
+      @keyframes pulsing{
+        0% { transform:  scale(1.00); }
+        19% { transform:  scale(1.10); }
+        100% { transform:  scale(1.10); }
+      }
     </style>
 
     <div class="queuelisting" horizontal layout center>
@@ -54,7 +70,7 @@
         <span class="artist">{{data.song.artist.name}}</span>
       </div>
       <!--<core-icon icon="reorder"></core-icon>-->
-      <core-icon icon="clear" on-tap="{{ removeFromQueue }}"></core-icon>
+      <core-icon icon="{{ removeIcon }}" on-tap="{{ removeFromQueue }}"></core-icon>
     </div>
   </template>
   <script>
@@ -62,9 +78,16 @@
       'use strict';
 
       Polymer({
+        paused: false,
         current: false,
+        observe: {
+          'paused current': 'updateIcon'
+        },
+        updateIcon: function() {
+          this.removeIcon = this.current ? (this.paused ? 'av:volume-mute' : 'av:volume-up') : 'clear'
+        },
         removeFromQueue: function() {
-          this.fire('remove', this.data);
+          if (!this.current) this.fire('remove', this.data);
         },
         dataChanged: function() {
           if (this.data && this.data.performers) {

@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/firebase-element/firebase-list.html">
 
-<polymer-element name="songroom-queue" attributes="roomid data currentTrack" fit>
+<polymer-element name="songroom-queue" attributes="roomid data currentTrack paused" fit>
   <template>
     <style>
       :host {
@@ -11,13 +11,14 @@
     <firebase-list id="ref" orderByPriority location="https://songroom.firebaseio.com/rooms/{{roomid}}/queue" data="{{data}}"></firebase-list>
 
     <template repeat="{{song in data}}">
-      <queue-listing data="{{song}}" on-remove="{{remove}}" current?="{{song.$key === currentTrack}}"></queue-listing>
+      <queue-listing data="{{song}}" on-remove="{{remove}}" current?="{{song.$key === currentTrack}}" paused?="{{paused}}"></queue-listing>
     </template>
   </template>
   <script>
     (function () {
 
       Polymer({
+        paused: false,
         remove: function(e, track) {
           this.$.ref.remove(track.$key);
           this.fire('remove', track);
