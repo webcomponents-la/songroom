@@ -1,26 +1,39 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../cdg-canvas/cdg-canvas.html">
 
-<polymer-element name="cdg-player" attributes="src gsrc framerate paused position">
+<polymer-element name="cdg-player" attributes="src gsrc framerate paused position duration controls">
   <template>
     <style>
       :host {
         display: block;
         position: relative;
       }
+
+      #audiowrap {
+        position: absolute;
+        bottom: 15px;
+        width: 100%;
+      }
     </style>
-    <audio id="audio" src="{{src}}" on-ended="{{passEvent}}"></audio>
     <cdg-canvas fit id="canvas" src="{{gsrc}}"></cdg-canvas>
+    <div id="audiowrap" layout horizontal center center-justified>
+      <audio id="audio" controls?="{{controls}}" src="{{src}}" on-ended="{{passEvent}}" on-durationchange="{{updateDuration}}"></audio>
+    </div>
   </template>
   <script>
     (function () {
       'use strict';
 
       Polymer({
+        duration: null,
+        controls: false,
         paused: true,
         framerate: 30,
         tick: 0,
         positionInterval: null,
+        updateDuration: function() {
+          this.duration = this.$.audio.duration;
+        },
         togglePlayback: function() {
           this.paused = !this.paused;
         },

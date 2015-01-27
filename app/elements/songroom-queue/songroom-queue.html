@@ -20,6 +20,11 @@
       Polymer({
         paused: false,
         remove: function(e, track) {
+          for (var i = this.$.ref.keys.indexOf(track.$key); i < this.$.ref.data.length; i++) {
+            console.log(i, this.$.ref.data[i]);
+            this.$.ref.data[i].$priority--;
+            console.log(this.$.ref.data[i].song.name, this.$.ref.data[i].$priority);
+          }
           this.$.ref.remove(track.$key);
           this.fire('remove', track);
         },

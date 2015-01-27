@@ -29,7 +29,7 @@
         <div flex>
           <div layout horizontal class="small play-position">
             <div flex><b>{{currentTrack.performers | performerList}}</b> is performing</div>
-            <div>{{playback.position | secondsToTime}} / 2:55</div>
+            <div>{{playback.position | secondsToTime}} / {{playback.duration | secondsToTime}}</div>
           </div>
           <div id="current-title">{{currentTrack.song.title}}</div>
           <div id="current-artist" class="small">by <b>{{currentTrack.song.artist.name}}</b></div>

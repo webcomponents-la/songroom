@@ -8,7 +8,7 @@
         display: block;
         background: black;
       }
-      
+
       #canvas {
         position: absolute;
         top: calc(50% - 107px);
@@ -48,7 +48,7 @@
       positionChanged: function() {
         var playPosition = Math.floor(this.position * 300);
         var currentPack  = this.decoder.get_current_pack();
-        
+
         // Constrain the play position to positive values only.
         playPosition = (playPosition < 0) ? 0 : playPosition;
         // Render from the beginning of the stream if a reverse seek of more than one second occurred.
@@ -58,7 +58,7 @@
         // Jump to the actual play position if it's ahead of our calculated smoothed position.
         positionToPlay = (playPosition > positionToPlay) ? playPosition : positionToPlay;
         // Check if we should render any packs, and do so if needed.
-        if (positionToPlay > currentPack)
+        if (positionToPlay > currentPack && this.data)
         {
             this.decoder.decode_packs(this.data, positionToPlay);
             this.decoder.redraw_canvas();
