@@ -30,11 +30,11 @@ def process(obj)
 
   if obj.key.end_with?('.mp3')
     path = Pathname.new(obj.key)
-    filename = *path.basename.to_s.sub!(/\.mp3\z/,'')
-    artist, title = filename.split(" - ")[1..2]
+    filename = path.basename.to_s.sub!(/\.mp3\z/,'')
+    artist, title = *filename.split(" - ")[1..2]
 
     unless artist && title
-      puts "xxx ERROR: Couldn't parse '#{filename}'"
+      puts "xxx ERROR: Couldn't parse '#{filename.to_s}' got #{artist} - #{title}"
       return
     end
 
