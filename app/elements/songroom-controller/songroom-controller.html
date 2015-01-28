@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
+<link rel="import" href="../../bower_components/firebase-element/firebase-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
@@ -19,7 +20,7 @@
     <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></firebase-element>
     <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}/playback" data="{{playback}}"></firebase-element>
     <firebase-element id="userRef" location="https://songroom.firebaseio.com/users/{{globals.user.uid}}" data="{{user}}"></firebase-element>
-    <core-ajax auto url="/songs/songs.json" handleAs="json" response="{{songs}}"></core-ajax>
+    <firebase-list id="songsRef" orderByChild="title" location="https://songroom.firebaseio.com/collections/{{room.collection}}/songs" data="{{songs}}"></firebase-list>
 
     <template if="{{currentTrack}}">
       <section id="controls" horizontal layout center class="{{ {offline: !playback.connected} | tokenList}}">
@@ -82,10 +83,7 @@
             {name: this.user.name, color: this.user.color, id: this.globals.user.uid}
           ];
 
-          var newRef = this.$.queue.push({
-            song: song,
-            performers: performers
-          });
+          var newRef = this.$.queue.push(song, performers);
 
           if (!this.room.currentTrack){ this.room.currentTrack = newRef.key(); }
 

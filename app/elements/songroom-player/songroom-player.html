@@ -59,7 +59,7 @@
     <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/playback" data="{{playback}}" on-data-ready="{{signalConnection}}"></firebase-element>
     <firebase-list id="queueRef" orderByPriority location="https://songroom.firebaseio.com/rooms/{{roomId}}/queue" data="{{data}}"></firebase-list>
 
-    <cdg-player fit id="player" src="{{currentTrack.song.urls.src}}" gsrc="{{currentTrack.song.urls.gsrc}}" duration="{{playback.duration}}" paused="{{playbackPaused}}" position="{{playback.position}}" on-ended="{{playNext}}"></cdg-player>
+    <cdg-player fit id="player" src="{{currentTrack.song.mp3_url}}" gsrc="{{currentTrack.song.cdg_url}}" duration="{{playback.duration}}" paused="{{playbackPaused}}" position="{{playback.position}}" on-ended="{{playNext}}"></cdg-player>
     <div id="pauser" class="{{ {show : playback.paused} | tokenList}}" fit layout vertical center center-justified>
       <core-icon style="width: 300px; height: 300px; color: white;" icon="av:pause"></core-icon>
     </div>

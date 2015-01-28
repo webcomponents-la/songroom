@@ -13,10 +13,17 @@ GEM
       json (~> 1.4)
       nokogiri (>= 1.4.4)
     dotenv (1.0.2)
+    echonest-ruby-api (0.7.0)
+      httparty
+      multi_json
+    firebase (0.2.3)
+      httpclient
+      json
     hashie (1.1.0)
     httparty (0.8.3)
       multi_json (~> 1.0)
       multi_xml
+    httpclient (2.6.0.1)
     i18n (0.6.11)
     id3tag (0.8.0)
     json (1.8.1)
@@ -45,6 +52,8 @@ DEPENDENCIES
   activesupport
   aws-sdk
   dotenv
+  echonest-ruby-api
+  firebase
   id3tag
   lastfm
   musicbrainz-ruby

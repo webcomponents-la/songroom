@@ -43,7 +43,7 @@
     <div class="songlisting" horizontal layout>
       <div class="info" flex vertical layout center-justified>
         <span class="title">{{song.title}}</span>
-        <span class="artist">{{song.artist.name}}</span>
+        <span class="artist">{{song.artist}}</span>
       </div>
       <div class="actions" horizontal layout center>
         <core-icon icon="{{ starred | starIcon }}" on-tap="{{ toggleStar }}"></core-icon>
