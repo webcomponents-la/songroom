@@ -4,6 +4,34 @@ Songroom is a multi-user cloud Karaoke player that allows a group of people to
 create a shared Karaoke queue that is played via an HTML5 Karaoke player on a
 separate screen.
 
+## Getting Started
+
+To get started with development, you'll need Grunt, Bower, and Yeoman Polymer
+installed:
+
+    npm install -g grunt-cli bower yo generator-polymer
+
+Next you'll need to install NPM and Bower dependencies:
+
+    npm install && bower install
+
+Next you'll want to sign up for [Firebase](https://www.firebase.com/) and create
+a test Firebase for yourself to use when you work on the app. Once you've done
+that, create a `.env.json` file in the project directory that looks like this:
+
+```javascript
+{
+  "FIREBASE_ORIGIN":"https://YOUR-FIREBASE.firebaseio.com"
+}
+```
+
+This will allow you to test locally without interfering with production data.
+Once you've done that, you can get a development server going:
+
+    grunt serve
+
+The app will now be running on `localhost:8080`.
+
 ## Origin Story
 
 So one day I ([@mbleigh](http://twitter.com/mbleigh)) was curious how those Karaoke CDs with the terrible
@@ -26,23 +54,6 @@ Perhaps we can, all together, build the best darn Karaoke experience the world
 has ever seen using 100% web technology.
 
 And on that day, we'll sing.
-
-## Getting Started
-
-To get started with development, you'll need Grunt, Bower, and Yeoman Polymer
-installed:
-
-    npm install -g grunt-cli bower yo generator-polymer
-
-Next you'll need to install NPM and Bower dependencies:
-
-    npm install && bower install
-
-Once you've done that, you can get a development server going:
-
-    grunt serve
-
-The app will now be running on `localhost:8080`.
 
 ## Continuous Deployment
 
