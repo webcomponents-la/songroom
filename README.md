@@ -32,6 +32,19 @@ Once you've done that, you can get a development server going:
 
 The app will now be running on `localhost:8080`.
 
+### Loading Seed Data
+
+To get the app fully up and running on your own Firebase, you'll need some seed
+data. This is provided in the `seed` directory and nested according to its Firebase
+location. For instance to load seed data contained in `seed/collections/pub.json`,
+open a browser to:
+
+    https://YOUR-FIREBASE.firebaseio.com/collections/pub
+
+Then click the **Import JSON** button and load the `pub.json` file. **This will
+replace all data at that location**, so be sure you're not overwriting anything
+important.
+
 ## Origin Story
 
 So one day I ([@mbleigh](http://twitter.com/mbleigh)) was curious how those Karaoke CDs with the terrible
