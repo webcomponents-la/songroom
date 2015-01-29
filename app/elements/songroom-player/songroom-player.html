@@ -1,9 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
-<link rel="import" href="../../bower_components/firebase-element/firebase-list.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
 
+<link rel="import" href="../app-data/app-data.html">
+<link rel="import" href="../app-data/app-list.html">
 <link rel="import" href="../cdg-player/cdg-player.html">
 
 <polymer-element name="songroom-player" attributes="room queue queueKeys currentTrack playback playbackPaused" on-dblclick="{{goFullscreen}}">
@@ -55,9 +55,9 @@
         opacity: 1.0;
       }
     </style>
-    <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}" data="{{room}}"></firebase-element>
-    <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomId}}/playback" data="{{playback}}" on-data-ready="{{signalConnection}}"></firebase-element>
-    <firebase-list id="queueRef" orderByPriority location="https://songroom.firebaseio.com/rooms/{{roomId}}/queue" data="{{data}}"></firebase-list>
+    <app-data id="roomRef" path="/rooms/{{roomId}}" data="{{room}}"></app-data>
+    <app-data id="playbackRef" path="/rooms/{{roomId}}/playback" data="{{playback}}" on-data-ready="{{signalConnection}}"></app-data>
+    <app-list id="queueRef" orderByPriority path="/rooms/{{roomId}}/queue" data="{{data}}"></app-list>
 
     <cdg-player fit id="player" src="{{currentTrack.song.mp3_url}}" gsrc="{{currentTrack.song.cdg_url}}" duration="{{playback.duration}}" paused="{{playbackPaused}}" position="{{playback.position}}" on-ended="{{playNext}}"></cdg-player>
     <div id="pauser" class="{{ {show : playback.paused} | tokenList}}" fit layout vertical center center-justified>
@@ -88,7 +88,7 @@
         },
 
         created: function() {
-          this.roomId = window.location.search.match(/room=([^&]+)/i)[1];
+          this.roomId = window.location.hash.substr(2);
         },
         updateDuration: function() {
           console.log(this.$.audio.duration);
@@ -98,6 +98,7 @@
           }
         },
         signalConnection: function() {
+          if (!this.playback) return;
           this.playback.connected = true;
           this.$.playbackRef.ref.onDisconnect().update({
             connected: false,

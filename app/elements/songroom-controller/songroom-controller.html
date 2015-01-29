@@ -1,6 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
-<link rel="import" href="../../bower_components/firebase-element/firebase-list.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
@@ -12,15 +10,17 @@
 <link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
 <link rel="import" href="../songroom-queue/songroom-queue.html">
+<link rel="import" href="../app-data/app-data.html">
+<link rel="import" href="../app-data/app-list.html">
 
 <polymer-element name="songroom-controller" attributes="roomid currentTrack tab playback" vertical layout fit>
   <template>
     <link rel="stylesheet" href="songroom-controller.css">
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <firebase-element id="roomRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></firebase-element>
-    <firebase-element id="playbackRef" location="https://songroom.firebaseio.com/rooms/{{roomid}}/playback" data="{{playback}}"></firebase-element>
-    <firebase-element id="userRef" location="https://songroom.firebaseio.com/users/{{globals.user.uid}}" data="{{user}}"></firebase-element>
-    <firebase-list id="songsRef" orderByChild="title" location="https://songroom.firebaseio.com/collections/{{room.collection}}/songs" data="{{songs}}"></firebase-list>
+    <app-data id="roomRef" path="/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></app-data>
+    <app-data id="playbackRef" path="/rooms/{{roomid}}/playback" data="{{playback}}"></app-data>
+    <app-data id="userRef" path="/users/{{globals.user.uid}}" data="{{user}}"></app-data>
+    <app-list id="songsRef" orderByChild="title" path="/collections/{{room.collection}}/songs" data="{{songs}}"></app-list>
 
     <template if="{{currentTrack}}">
       <section id="controls" horizontal layout center class="{{ {offline: !playback.connected} | tokenList}}">
@@ -114,7 +114,7 @@
           }
         },
         trackChanged: function() {
-          console.log(this.room);
+          if (!this.room) return;
           if (this.room.currentTrack) {
             if (this.room.queue) {
               this.currentTrack = this.room.queue[this.room.currentTrack];

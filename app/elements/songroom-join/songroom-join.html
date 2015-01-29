@@ -7,8 +7,9 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
 <link rel="import" href="../../bower_components/core-icons/hardware-icons.html">
-<link rel="import" href="../../bower_components/firebase-element/firebase-element.html">
 <link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
+
+<link rel="import" href="../app-data/app-data.html">
 
 <polymer-element name="songroom-join" attributes="joinType prefs" flex>
   <template>
@@ -92,7 +93,7 @@
     </style>
 
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <firebase-element id="prefsRef" location="https://songroom.firebaseio.com/users/{{globals.user.uid}}" data="{{prefs}}"></firebase-element>
+    <app-data id="prefsRef" path="/users/{{globals.user.uid}}" data="{{prefs}}"></app-data>
 
     <div id="container" layout vertical fit>
       <template if="{{!joinType}}">
@@ -176,7 +177,7 @@
           if (this.joinType === "performer") {
             window.location.hash = "#/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
           } else {
-            window.location = "/player.html?room=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+            window.location = "/player.html#/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
           }
         },
         createRoom: function() {

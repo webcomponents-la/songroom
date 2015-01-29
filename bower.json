@@ -23,7 +23,8 @@
     "core-selector": "Polymer/core-selector#^0.5.1",
     "firebase": "2.0.x",
     "core-localstorage": "Polymer/core-localstorage#^0.5.1",
-    "pvc-globals": "divshot/pvc-globals"
+    "pvc-globals": "divshot/pvc-globals",
+    "divshot-env": "divshot/divshot-env#~0.1.0"
   },
   "devDependencies": {
     "polymer-test-tools": "Polymer/polymer-test-tools#^0.5.1"

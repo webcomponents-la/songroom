@@ -4,6 +4,7 @@ var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
 var mountFolder = function (connect, dir) {
   return connect.static(require('path').resolve(dir));
 };
+var superstatic = require('superstatic');
 
 // # Globbing
 // for performance reasons we're only matching one level down:
@@ -87,8 +88,8 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               lrSnippet,
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.app)
+              superstatic({config: {root: '.tmp'}, env: '.env.json'}),
+              superstatic({config: {root: 'app'}, env: '.env.json'})
             ];
           }
         }
