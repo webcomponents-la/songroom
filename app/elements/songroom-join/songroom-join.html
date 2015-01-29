@@ -173,7 +173,11 @@
         },
         joinRoom: function() {
           console.log(this.$);
-          window.location.hash = "#/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+          if (this.joinType === "performer") {
+            window.location.hash = "#/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+          } else {
+            window.location = "/player.html?room=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+          }
         },
         createRoom: function() {
           var newid = "";
@@ -183,11 +187,11 @@
 
           var roomRef = new Firebase("https://songroom.firebaseio.com/rooms/" + newid);
           roomRef.set({
-            users: [],
+            users: {},
             queue: {},
-            queuePosition: 0,
+            currentTrack: null,
             paused: true,
-            createdAt: new Date().getTime(),
+            createdAt: Firebase.ServerValue.TIMESTAMP,
             playback: {
               position: 0,
               paused: true
