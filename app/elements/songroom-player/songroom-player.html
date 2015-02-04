@@ -89,7 +89,7 @@
         },
 
         created: function() {
-          this.roomId = window.location.hash.substr(2);
+          this.roomId = window.location.pathname.split("/")[2];
         },
         updateDuration: function() {
           if (this.playback) {

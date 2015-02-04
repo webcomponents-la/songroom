@@ -51,11 +51,11 @@
 
       Polymer({
         launchPlayer: function() {
-          window.location = "/player.html#/" + this.roomid;
+          window.location = "/player/" + this.roomid;
         },
         launchPerformer: function() {
           this.globals.prefs.roomid = this.roomid;
-          window.location.hash = "#/join/performer";
+          this.globals.router.go("/join/performer");
         }
       });
 

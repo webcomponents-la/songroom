@@ -18,8 +18,8 @@
     <link rel="stylesheet" href="songroom-controller.css">
     <pvc-globals values="{{globals}}"></pvc-globals>
     <app-data id="roomRef" path="/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></app-data>
+    <app-list id="usersRef" path="/rooms/{{roomid}}/users" data="{{users}}" on-data-ready="{{usersReady}}"></app-list>
     <app-data id="playbackRef" path="/rooms/{{roomid}}/playback" data="{{playback}}"></app-data>
-    <app-data id="userRef" path="/users/{{globals.user.uid}}" data="{{user}}" on-data-ready="{{initPrefs}}"></app-data>
     <app-list id="songsRef" orderByChild="title" path="/collections/{{room.collection}}/songs" data="{{songs}}"></app-list>
 
     <template if="{{currentTrack}}">
@@ -66,12 +66,21 @@
         tab: 'tab-queue',
         observe: {
           'room.currentTrack': 'trackChanged',
-          '$.roomRef.dataReady': 'checkExistence'
+          '$.roomRef.dataReady': 'checkExistence',
+          'globals.user globals.prefs users': 'usersReady'
         },
-        initPrefs: function() {
-          if (this.$.userRef.dataReady && !this.user) {
-            this.user = {};
-          }
+        usersReady: function() {
+          if (!this.globals.user || !this.globals.prefs || this.connectRegistered) return;
+
+          var childRef = this.$.usersRef.ref.child(this.globals.user.uid)
+          childRef.update({
+            name: this.globals.prefs.name,
+            color: this.globals.prefs.color,
+            status: 'online',
+            connectedAt: Firebase.ServerValue.TIMESTAMP
+          });
+          childRef.onDisconnect().update({status: 'offline', lastSeenAt: Firebase.ServerValue.TIMESTAMP});
+          this.connectRegistered = true;
         },
         tabChanged: function() {
           if (this.tab === 'browse') {
@@ -85,7 +94,7 @@
         },
         handleEnqueue: function(e, song) {
           var performers = [
-            {name: this.user.name, color: this.user.color, id: this.globals.user.uid}
+            {name: this.globals.prefs.name, color: this.globals.prefs.color, id: this.globals.user.uid}
           ];
 
           var newRef = this.$.queue.push(song, performers);
@@ -115,7 +124,7 @@
           this.room.command = {
             name: "togglePlayback",
             args: [],
-            user: this.user
+            user: this.globals.prefs
           }
         },
         trackChanged: function() {
@@ -159,7 +168,7 @@
           this.room.command = {
             name: 'seek',
             args: [0],
-            user: this.user
+            user: this.globals.prefs
           };
         },
         skip: function() {
@@ -168,7 +177,7 @@
             this.room.command = {
               name: 'track',
               args: [this.$.queue.trackAfter(this.room.currentTrack)],
-              user: this.user
+              user: this.globals.prefs
             }
           } else {
             this.fire('app-notify', 'No songs left in queue!');

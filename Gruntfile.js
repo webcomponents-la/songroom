@@ -88,8 +88,8 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               lrSnippet,
-              superstatic({config: {root: '.tmp'}, env: '.env.json'}),
-              superstatic({config: {root: 'app'}, env: '.env.json'})
+              superstatic({config: {root: '.tmp'}}),
+              superstatic({config: {root: 'app'}})
             ];
           }
         }

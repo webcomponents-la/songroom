@@ -23,7 +23,7 @@
     "grunt-vulcanize": "~0.3.0",
     "jshint-stylish": "~0.4.0",
     "load-grunt-tasks": "~0.6.0",
-    "superstatic": "^2.0.0",
+    "superstatic": "^2.0.2",
     "time-grunt": "~0.4.0"
   },
   "engines": {

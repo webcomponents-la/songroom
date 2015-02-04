@@ -37,7 +37,7 @@
     <core-header-panel id="interface" fit>
       <div id="titlebar" class="core-header">Songroom</div>
       <section class="content">
-        <app-router fit>
+        <app-router mode="pushstate" fit id="router">
           <app-route path="/rooms/:roomid/created" element="songroom-created"></app-route>
           <app-route path="/rooms/:roomid" element="songroom-controller"></app-route>
           <app-route path="/" element="songroom-join"></app-route>
@@ -58,6 +58,9 @@
       'use strict';
 
       Polymer({
+        ready: function() {
+          this.globals.router = this.$.router;
+        },
         showNotification: function(e, message) {
           this.$.toast.text = message;
           this.$.toast.show();

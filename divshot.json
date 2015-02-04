@@ -2,5 +2,10 @@
   "name": "songroom",
   "root": "dist",
   "clean_urls": false,
-  "error_page": "error.html"
+  "error_page": "error.html",
+  "routes": {
+    "/join/**": "index.html",
+    "/rooms/**": "index.html",
+    "/player/**": "player.html"
+  }
 }

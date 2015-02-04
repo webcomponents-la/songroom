@@ -166,11 +166,10 @@
           window.location = "/player.html?room=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
         },
         joinRoom: function() {
-          console.log(this.$);
           if (this.joinType === "performer") {
-            window.location.hash = "#/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+            this.globals.router.go("/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase());
           } else {
-            window.location = "/player.html#/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+            window.location = "/player/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
           }
         },
         createRoom: function() {
@@ -193,7 +192,7 @@
             }
           }, function() {
             this.globals.prefs.roomCode = newid;
-            window.location.hash = "#/rooms/" + newid + "/created";
+            this.globals.router.go("/rooms/" + newid + "/created");
           }.bind(this));
 
         }
