@@ -162,6 +162,11 @@
         selectJoinType: function(e) {
           this.joinType = e.currentTarget.getAttribute("name");
         },
+        joinTypeChanged: function() {
+          if (window.location.pathname.indexOf(this.joinType) < 0) {
+            window.history.pushState(null, {}, "/join/" + this.joinType);
+          }
+        },
         launchPlayer: function() {
           window.location = "/player.html?room=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
         },

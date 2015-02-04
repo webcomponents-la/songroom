@@ -30,8 +30,10 @@
     </style>
 
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <divshot-env data="{{globals.env}}" on-data-ready="{{login}}"></divshot-env>
-    <firebase-login id="auth" location="{{globals.env.FIREBASE_ORIGIN}}" provider="anonymous" user="{{globals.user}}" on-login="{{initPrefs}}"></firebase-login>
+    <divshot-env data="{{globals.env}}"></divshot-env>
+    <template if="{{globals.env.FIREBASE_ORIGIN}}">
+      <firebase-login id="auth" location="{{globals.env.FIREBASE_ORIGIN}}" autoLogin="true" provider="anonymous" user="{{globals.user}}" on-login="{{initPrefs}}"></firebase-login>
+    </template>
     <app-data id="prefsRef" path="/users/{{globals.user.uid}}" data="{{globals.prefs}}" on-data-ready="{{initPrefs}}"></app-data>
 
     <core-header-panel id="interface" fit>
@@ -66,10 +68,15 @@
           this.$.toast.show();
         },
         login: function() {
-          this.async(function(){ this.$.auth.login(); });
+          this.async(function(){
+            if (this.$.auth.statusKnown && !this.$.auth.user) {
+              this.$.auth.login();
+            }
+          });
         },
         initPrefs: function() {
-          if (this.globals.user && !this.globals.prefs) {
+          if (this.globals.user && this.$.prefsRef.dataReady && !this.globals.prefs) {
+            console.log(this.$.prefsRef.path, this.globals.prefs);
             this.globals.prefs = {roomCode: ''};
           }
         }
