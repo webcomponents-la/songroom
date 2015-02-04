@@ -4,7 +4,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^0.5.1",
     "core-ajax": "Polymer/core-ajax#^0.5.1",
-    "firebase-element": "mbleigh/firebase-element#list",
+    "firebase-list": "divshot/firebase-list",
+    "firebase-element": "polymer/firebase-element",
     "core-icons": "Polymer/core-icons#^0.5.1",
     "core-list": "Polymer/core-list#master",
     "paper-icon-button": "Polymer/paper-icon-button#^0.5.1",

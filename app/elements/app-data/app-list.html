@@ -1,19 +1,16 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/divshot-env/divshot-env.html">
-<link rel="import" href="../../bower_components/firebase-element/firebase-list.html">
+<link rel="import" href="../../bower_components/firebase-list/firebase-list.html">
 
 <polymer-element name="app-list" extends="firebase-list" attributes="path">
   <template>
-    <divshot-env data="{{env}}"></divshot-env>
+    <divshot-env data="{{env}}" on-data-ready="{{pathChanged}}"></divshot-env>
   </template>
   <script>
     (function () {
 
       Polymer({
-        observe: {
-          'env path': 'updateLocation'
-        },
-        updateLocation: function() {
+        pathChanged: function() {
           if (this.env && this.env.FIREBASE_ORIGIN && this.path) {
             this.location = this.env.FIREBASE_ORIGIN + this.path;
             this.locationChanged();

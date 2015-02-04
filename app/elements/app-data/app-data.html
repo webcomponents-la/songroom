@@ -4,20 +4,16 @@
 
 <polymer-element name="app-data" extends="firebase-element" attributes="path">
   <template>
-    <divshot-env data="{{env}}"></divshot-env>
+    <divshot-env data="{{env}}" on-data-ready="{{pathChanged}}"></divshot-env>
   </template>
   <script>
     (function () {
 
       Polymer({
-        observe: {
-          'env path': 'updateLocation'
-        },
-        updateLocation: function() {
+        pathChanged: function() {
           if (this.env && this.env.FIREBASE_ORIGIN && this.path) {
             this.location = this.env.FIREBASE_ORIGIN + this.path;
-          } else {
-            this.location = null;
+            this.locationChanged();
           }
         }
       });

@@ -93,7 +93,7 @@
     </style>
 
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <app-data id="prefsRef" path="/users/{{globals.user.uid}}" data="{{prefs}}"></app-data>
+    <app-data id="prefsRef" path="/users/{{globals.user.uid}}" data="{{prefs}}" on-data-ready="{{initPrefs}}"></app-data>
 
     <div id="container" layout vertical fit>
       <template if="{{!joinType}}">
@@ -160,12 +160,6 @@
           {name: 'Light Green', value: '#8BC34A'},
           {name: 'Deep Orange', value: '#FF5722'},
         ],
-        prefsChanged: function() {
-          console.log(this.prefs);
-          if (this.$.prefsRef.initialized && this.$.prefsRef === null) {
-            this.$.prefsRef = {};
-          }
-        },
         selectJoinType: function(e) {
           this.joinType = e.currentTarget.getAttribute("name");
         },
@@ -178,6 +172,12 @@
             window.location.hash = "#/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
           } else {
             window.location = "/player.html#/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+          }
+        },
+        initPrefs: function() {
+          console.log('initPrefs',this.$.prefsRef.location,this.$.prefsRef.dataReady, this.prefs);
+          if (this.$.prefsRef.dataReady && !this.prefs) {
+            this.prefs = {};
           }
         },
         createRoom: function() {
