@@ -13,7 +13,7 @@ deploy:
   environment:
     master: development
     staging: staging
-    produciton: production
+    production: production
   skip_cleanup: true
   api_key:
     secure: BuUclicBTqmyiEOLkZ8sEuZxOdv9W5Zf3dKHQJFeeXIvwBB7XaRjS5QOw6JERt4ifF4etRxKFpTaw9KFiXGBMJJ2eVxNSVK836Uc8DFmmt8W3MpO8s3iqxMlAEZZrKO7Dmv++LZMf8Luk1/882ENlL4rllwXSsstHfvMuUdx9rA=
