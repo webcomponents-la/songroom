@@ -156,7 +156,6 @@
           return performers.map(function(p){ return p.name }).join(', ');
         },
         replay: function() {
-          console.log("REPLAY");
           this.room.command = {
             name: 'seek',
             args: [0],

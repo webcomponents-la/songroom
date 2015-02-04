@@ -84,14 +84,14 @@
         observe: {
           'room.command': 'processCommand',
           'room.currentTrack': 'trackChanged',
-          'playback playback.paused playback.banner': 'handlePlayback'
+          'playback playback.paused playback.banner': 'handlePlayback',
+          'playback': 'signalConnection'
         },
 
         created: function() {
           this.roomId = window.location.hash.substr(2);
         },
         updateDuration: function() {
-          console.log(this.$.audio.duration);
           if (this.playback) {
 
             this.playback.duration = this.$.audio.duration || 0;
@@ -132,7 +132,6 @@
           this.playbackPaused = this.playback.paused || this.playback.banner;
         },
         playTrack: function(newTrack) {
-          console.log("playTrack", newTrack);
           this.$.playbackRef.ref.update({
             paused: false,
             position: 0,
