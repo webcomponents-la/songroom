@@ -51,7 +51,7 @@
 
       Polymer({
         launchPlayer: function() {
-          window.location = "/player.html?room=" + this.roomid;
+          window.location = "/player.html#/" + this.roomid;
         },
         launchPerformer: function() {
           this.globals.prefs.roomid = this.roomid;
