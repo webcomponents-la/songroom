@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/core-icons/hardware-icons.html">
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
 <polymer-element name="songroom-created" attributes="roomid">
   <template>
@@ -28,6 +29,8 @@
       }
     </style>
 
+    <pvc-globals values="{{globals}}"></pvc-globals>
+
     <p>Your Room Code</p>
     <h1>{{roomid}}</h1>
 
@@ -51,7 +54,8 @@
           window.location = "/player.html?room=" + this.roomid;
         },
         launchPerformer: function() {
-          window.location.hash = "#/rooms/" + this.roomid;
+          this.globals.prefs.roomid = this.roomid;
+          window.location.hash = "#/join/performer";
         }
       });
 

@@ -93,7 +93,6 @@
     </style>
 
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <app-data id="prefsRef" path="/users/{{globals.user.uid}}" data="{{prefs}}" on-data-ready="{{initPrefs}}"></app-data>
 
     <div id="container" layout vertical fit>
       <template if="{{!joinType}}">
@@ -120,18 +119,18 @@
         </paper-tabs>
         <div id="joinForm" layout vertical flex>
           <paper-input-decorator class="block-input" label="Room Code">
-            <input id="roomInput" is="core-input" maxlength="6" value="{{prefs.roomCode}}"></input>
+            <input id="roomInput" is="core-input" maxlength="6" value="{{globals.prefs.roomCode}}"></input>
           </paper-input-decorator>
           <template if="{{ joinType == 'performer' }}">
             <paper-input-decorator class="block-input" label="Enter Your Name">
-              <input  id="nameField" is="core-input" value="{{prefs.name}}"></input>
+              <input  id="nameField" is="core-input" value="{{globals.prefs.name}}"></input>
             </paper-input-decorator>
             <p class="desc">Pick A Color</p>
-            <core-selector id="colorPicker" valueattr="color" selected="{{prefs.color}}" horizontal layout wrap center-justified>
+            <core-selector id="colorPicker" valueattr="color" selected="{{globals.prefs.color}}" horizontal layout wrap center-justified>
               <template repeat="{{color in playerColors}}"><div class="colorTile" title="{{color.name}}" color="{{color.value}}" style="background: {{color.value}};"></paper-item></template>
             </core-selector>
           </template>
-          <paper-button id="buttonJoin" on-click="{{joinRoom}}" style="background-color: {{prefs.color || '#333333'}}">Join Room</paper-button>
+          <paper-button id="buttonJoin" on-click="{{joinRoom}}" style="background-color: {{globals.prefs.color || '#333333'}}">Join Room</paper-button>
           <p class="desc">Need to start a new room?</p>
           <paper-button id="buttonCreate" on-click="{{createRoom}}"><core-icon icon="av:queue"></core-icon> Create A New Room</paper-button>
         </div>
@@ -174,19 +173,13 @@
             window.location = "/player.html#/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
           }
         },
-        initPrefs: function() {
-          console.log('initPrefs',this.$.prefsRef.location,this.$.prefsRef.dataReady, this.prefs);
-          if (this.$.prefsRef.dataReady && !this.prefs) {
-            this.prefs = {};
-          }
-        },
         createRoom: function() {
           var newid = "";
           for(var i = 0; i < 4; i++) {
             newid += LETTERS[Math.floor(Math.random() * 25)];
           }
 
-          var roomRef = new Firebase("https://songroom.firebaseio.com/rooms/" + newid);
+          var roomRef = new Firebase(this.globals.env.FIREBASE_ORIGIN + "/rooms/" + newid);
           roomRef.set({
             users: {},
             queue: {},
@@ -199,7 +192,7 @@
               paused: true
             }
           }, function() {
-            this.prefs.roomCode = newid;
+            this.globals.prefs.roomCode = newid;
             window.location.hash = "#/rooms/" + newid + "/created";
           }.bind(this));
 

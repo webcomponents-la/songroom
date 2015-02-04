@@ -6,6 +6,8 @@
 <link rel="import" href="../../bower_components/firebase-element/firebase-login.html">
 <link rel="import" href="../../bower_components/divshot-env/divshot-env.html">
 
+<link rel="import" href="../app-data/app-data.html">
+
 <polymer-element name="songroom-app" attributes="roomid" on-app-notify="{{showNotification}}">
   <template>
     <style>
@@ -28,8 +30,9 @@
     </style>
 
     <pvc-globals values="{{globals}}"></pvc-globals>
-    <divshot-env env="{{env}}"></divshot-env>
-    <firebase-login id="auth" location="{{env.FIREBASE_ORIGIN}}" autoLogin="true" provider="anonymous" user="{{globals.user}}"></firebase-login>
+    <divshot-env data="{{globals.env}}" on-data-ready="{{login}}"></divshot-env>
+    <firebase-login id="auth" location="{{globals.env.FIREBASE_ORIGIN}}" provider="anonymous" user="{{globals.user}}" on-login="{{initPrefs}}"></firebase-login>
+    <app-data id="prefsRef" path="/users/{{globals.user.uid}}" data="{{globals.prefs}}" on-data-ready="{{initPrefs}}"></app-data>
 
     <core-header-panel id="interface" fit>
       <div id="titlebar" class="core-header">Songroom</div>
@@ -38,6 +41,8 @@
           <app-route path="/rooms/:roomid/created" element="songroom-created"></app-route>
           <app-route path="/rooms/:roomid" element="songroom-controller"></app-route>
           <app-route path="/" element="songroom-join"></app-route>
+          <app-route path="/join/:joinType" element="songroom-join"></app-route>
+          <app-route path="/join/:joinType" element="songroom-join"></app-route>
           <app-route path="*">
             <template>
               <p>Page Not Found. Sorry!</p>
@@ -56,6 +61,14 @@
         showNotification: function(e, message) {
           this.$.toast.text = message;
           this.$.toast.show();
+        },
+        login: function() {
+          this.async(function(){ this.$.auth.login(); });
+        },
+        initPrefs: function() {
+          if (this.globals.user && !this.globals.prefs) {
+            this.globals.prefs = {roomCode: ''};
+          }
         }
       });
 

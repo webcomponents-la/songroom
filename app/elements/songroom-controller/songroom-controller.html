@@ -19,7 +19,7 @@
     <pvc-globals values="{{globals}}"></pvc-globals>
     <app-data id="roomRef" path="/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></app-data>
     <app-data id="playbackRef" path="/rooms/{{roomid}}/playback" data="{{playback}}"></app-data>
-    <app-data id="userRef" path="/users/{{globals.user.uid}}" data="{{user}}"></app-data>
+    <app-data id="userRef" path="/users/{{globals.user.uid}}" data="{{user}}" on-data-ready="{{initPrefs}}"></app-data>
     <app-list id="songsRef" orderByChild="title" path="/collections/{{room.collection}}/songs" data="{{songs}}"></app-list>
 
     <template if="{{currentTrack}}">
@@ -67,6 +67,11 @@
         observe: {
           'room.currentTrack': 'trackChanged',
           '$.roomRef.dataReady': 'checkExistence'
+        },
+        initPrefs: function() {
+          if (this.$.userRef.dataReady && !this.user) {
+            this.user = {};
+          }
         },
         tabChanged: function() {
           if (this.tab === 'browse') {
