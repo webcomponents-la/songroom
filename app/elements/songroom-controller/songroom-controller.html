@@ -10,6 +10,7 @@
 <link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
 <link rel="import" href="../songroom-queue/songroom-queue.html">
+<link rel="import" href="../songroom-browse/songroom-browse.html">
 <link rel="import" href="../app-data/app-data.html">
 <link rel="import" href="../app-data/app-list.html">
 
@@ -18,9 +19,8 @@
     <link rel="stylesheet" href="songroom-controller.css">
     <pvc-globals values="{{globals}}"></pvc-globals>
     <app-data id="roomRef" path="/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></app-data>
-    <app-list id="usersRef" path="/rooms/{{roomid}}/users" data="{{users}}" on-data-ready="{{usersReady}}"></app-list>
+    <app-list id="usersRef" readonly path="/rooms/{{roomid}}/users" data="{{users}}" on-data-ready="{{usersReady}}"></app-list>
     <app-data id="playbackRef" path="/rooms/{{roomid}}/playback" data="{{playback}}"></app-data>
-    <app-list id="songsRef" orderByChild="title" path="/collections/{{room.collection}}/songs" data="{{songs}}"></app-list>
 
     <template if="{{currentTrack}}">
       <section id="controls" horizontal layout center class="{{ {offline: !playback.connected} | tokenList}}">
@@ -49,11 +49,7 @@
         <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" paused?="{{playback.paused}}" on-remove="{{trackRemoved}}"></songroom-queue>
       </section>
       <section id="tab-browse" layout vertical flex>
-        <core-list id="list" flex height="64" data="{{songs}}">
-          <template>
-            <song-listing song="{{model}}" on-enqueue="{{handleEnqueue}}"></song-listing>
-          </template>
-        </core-list>
+        <songroom-browse id="browse" collection="{{room.collection}}" on-enqueue="{{handleEnqueue}}"></songroom-browse>
       </section>
     </core-animated-pages>
 

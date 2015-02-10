@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+footer {
+  background: #333;
+  color: white;
+}
+
+footer core-icon {
+  margin-left: 8px;
+}
+
+#search {
+  display: block;
+  padding: 12px 12px 12px 9px;
+  font-family: Montserrat, sans-serif;
+  background: #333;
+  border: 0;
+}
+
+#search:focus {
+  outline: none;
+}

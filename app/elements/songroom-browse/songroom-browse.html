@@ -1,0 +1,44 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+
+<polymer-element name="songroom-browse" attributes="collection songs" fit vertical layout>
+  <template>
+    <link rel="stylesheet" href="songroom-browse.css">
+
+    <app-list id="songsRef" readonly orderByChild="title" path="/collections/{{collection}}/songs" data="{{songs}}"></app-list>
+
+    <core-list id="list" flex height="64" data="{{songs | search(query) }}">
+      <template>
+        <song-listing song="{{model}}"></song-listing>
+      </template>
+    </core-list>
+
+    <footer horizontal layout center>
+      <core-icon icon="search"></core-icon><input flex id="search" value="{{query}}" type="search" placeholder="Search Songs">
+    </footer>
+  </template>
+  <script>
+    (function () {
+
+      Polymer({
+        search: function(songs, query) {
+          if (!query || query.length < 2) return songs;
+
+          var term = query.toLowerCase().replace(/[^a-z0-9]/g,'');
+          var out = [];
+          for (var i = 0; i < songs.length; i++) {
+            if ([
+              songs[i].title.toLowerCase().replace(/[^a-z0-9]/g,''),
+              songs[i].artist.toLowerCase().replace(/[^a-z0-9]/g,'')
+            ].join(' ').indexOf(term) >= 0) {
+              out.push(songs[i]);
+            }
+          }
+          return out;
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

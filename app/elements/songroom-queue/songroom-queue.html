@@ -9,10 +9,12 @@
         display: block;
       }
     </style>
-    <app-list id="ref" orderByPriority path="/rooms/{{roomid}}/queue" data="{{data}}"></app-list>
+    <app-list id="ref" readonly orderByPriority path="/rooms/{{roomid}}/queue" data="{{data}}"></app-list>
 
-    <template repeat="{{song in data}}">
-      <queue-listing data="{{song}}" on-remove="{{remove}}" current?="{{song.$key === currentTrack}}" paused?="{{paused}}"></queue-listing>
+    <template if="{{data.length}}">
+      <template repeat="{{song in data }}">
+        <queue-listing data="{{song}}" on-remove="{{remove}}" current?="{{song.$key === currentTrack}}" paused?="{{paused}}"></queue-listing>
+      </template>
     </template>
   </template>
   <script>
@@ -28,6 +30,11 @@
           }
           this.$.ref.remove(track.$key);
           this.fire('remove', track);
+        },
+        startAt: function(songs, track) {
+          var startAt = this.$.ref.indexOfChild(this.currentTrack);
+          console.log(startAt);
+          return songs.slice(startAt, songs.length);
         },
         push: function(song, performers) {
           song = Polymer.mixin({}, song);
