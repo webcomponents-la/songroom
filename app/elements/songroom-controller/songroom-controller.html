@@ -10,6 +10,7 @@
 <link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
 <link rel="import" href="../songroom-queue/songroom-queue.html">
+<link rel="import" href="../songroom-find/songroom-find.html">
 <link rel="import" href="../app-data/app-data.html">
 <link rel="import" href="../app-data/app-list.html">
 
@@ -49,11 +50,7 @@
         <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" paused?="{{playback.paused}}" on-remove="{{trackRemoved}}"></songroom-queue>
       </section>
       <section id="tab-browse" layout vertical flex>
-        <core-list id="list" flex height="64" data="{{songs}}">
-          <template>
-            <song-listing song="{{model}}" on-enqueue="{{handleEnqueue}}"></song-listing>
-          </template>
-        </core-list>
+        <songroom-find></songroom-find>
       </section>
     </core-animated-pages>
 

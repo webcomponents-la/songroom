@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+#q {
+  display: block;
+  background: #222;
+  color: white;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.result .details {
+  padding: 8px;
+}

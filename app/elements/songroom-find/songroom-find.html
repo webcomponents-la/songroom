@@ -1,0 +1,55 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-apis/google-client-api.html">
+<link rel="import" href="../../bower_components/core-input/core-input.html">
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-image/core-image.html">
+
+<polymer-element name="songroom-find" attributes="q" fit vertical layout>
+  <template>
+    <link rel="stylesheet" href="songroom-find.css">
+    <google-api-loader id="yt" name="youtube" version="v3" on-google-api-load="{{initApi}}"></google-api-loader>
+    <input is="core-input" id="q" type="search" committedValue="{{q}}" placeholder="Search YouTube for Songs..."></input>
+    <core-list data="{{results}}" flex>
+      <template>
+        <div horizontal layout class="result">
+          <core-image src="{{model.snippet.thumbnails.default.url}}" width="60" height="45" sizing="contain" preload fade></core-image>
+          <div class="details" flex>{{model.snippet.title}}</div>
+        </div>
+      </template>
+    </core-list>
+  </template>
+  <script>
+    (function () {
+
+      Polymer({
+        observe: {
+          'q': 'search'
+        },
+        initApi: function() {
+          this.yt = this.$.yt.api;
+          gapi.client.setApiKey('AIzaSyBhZfUMZ1pPJ7-qv2Gcv0neEkkn0G58T-w');
+          console.log('YouTube API Client Initialized');
+        },
+        search: function() {
+          if (this.q.length < 4) return;
+
+          this.$.yt.api.search.list({
+            q: this.q,
+            part: 'snippet',
+            type: 'video',
+            videoEmbeddable: true,
+            maxResults: 10
+          }).execute(this.searchResponse.bind(this));
+        },
+        searchResponse: function(res) {
+          if (res && res.items.length) {
+            this.results = res.items;
+          } else {
+            this.results = [];
+          }
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>
