@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>app-data</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="helpers.js"></script>
+
+  <link rel="import" href="../elements/app-data/app-data.html">
+</head>
+<body>
+
+  <app-data></app-data>
+
+  <script>
+    /*global suite, test, Helpers */
+    var helpers = new Helpers('app-data');
+    suite('app-data', function() {
+      test('should include divshot-env', function() {
+        helpers.expectCount(1, 'divshot-env');
+      });
+    });
+  </script>
+
+</body>
+</html>

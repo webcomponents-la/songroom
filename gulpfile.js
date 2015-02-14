@@ -149,18 +149,27 @@ gulp.task('vulcanize', function () {
 // Clean Output Directory
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
-function serve( directories ) {
+function serve( directories, callback) {
+  var port = process.env.PORT || 3474;
   var dev = connect();
   directories.forEach(function (directory) {
     dev.use(superstatic({ config: { root: directory } }));
   });
-  dev.listen(process.env.PORT || 8080);
+  dev.listen(port, function () {
+    var url = 'http://localhost:' +  port;
+    $.util.log('Local server started at: ', $.util.colors.cyan(url));
+    if (typeof callback === 'function') {
+      callback(null, url);
+    }
+  });
 }
 
 // Watch Files For Changes & Reload
 gulp.task('serve', ['styles', 'elements'], function () {
-  browserSync({ server: false });
-  serve(['app', '.tmp']);
+  browserSync({ server: false, logSnippet: false });
+  serve(['app', '.tmp'], function (err, url) {
+    require('open')(url);
+  });
   gulp.watch(['app/**/*.html'], reload);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
   gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
