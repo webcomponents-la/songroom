@@ -70,9 +70,9 @@
           'globals.user globals.prefs users': 'usersReady'
         },
         usersReady: function() {
-          if (!this.globals.user || !this.globals.prefs || this.connectRegistered) return;
+          if (!this.globals.user || !this.globals.prefs || this.connectRegistered) { return; }
 
-          var childRef = this.$.usersRef.ref.child(this.globals.user.uid)
+          var childRef = this.$.usersRef.ref.child(this.globals.user.uid);
           childRef.update({
             name: this.globals.prefs.name,
             color: this.globals.prefs.color,
@@ -84,7 +84,7 @@
         },
         tabChanged: function() {
           if (this.tab === 'browse') {
-            this.async(function(){ this.$.list.updateSize() });
+            this.async(function(){ this.$.list.updateSize(); });
           }
         },
         trackRemoved: function(e, track) {
@@ -103,8 +103,8 @@
 
           this.fire('app-notify', '"' + song.title + '" was added to the queue.');
         },
-        toggleFavorite: function(e) {
-          console.log("FAV TOGGLE");
+        toggleFavorite: function() {
+
         },
         roomChanged: function() {
           if (this.room && !this.room.queue) {
@@ -122,20 +122,20 @@
         },
         togglePlayback: function() {
           this.room.command = {
-            name: "togglePlayback",
+            name: 'togglePlayback',
             args: [],
             user: this.globals.prefs
-          }
+          };
         },
         trackChanged: function() {
-          if (!this.room) return;
+          if (!this.room) { return; }
           if (this.room.currentTrack) {
             if (this.room.queue) {
               this.currentTrack = this.room.queue[this.room.currentTrack];
             } else {
               this.room.currentTrack = null;
             }
-          } else if (this.$.queue.data) {
+          } else if (this.$.queue.data && this.$.queue.length) {
             this.room.currentTrack = this.$.queue.data[0].key;
           }
         },
@@ -147,11 +147,11 @@
           var minutes = Math.floor(seconds / 60);
           seconds = seconds % 60;
           var out = seconds.toString();
-          if (seconds < 10) out = "0" + out;
-          return minutes.toString() + ":" + out;
+          if (seconds < 10) { out = '0' + out; }
+          return minutes.toString() + ':' + out;
         },
         keysToItems: function(keys) {
-          if (!keys) return;
+          if (!keys) { return; }
           var that = this;
 
           var out = keys.map(function(key) {
@@ -161,8 +161,8 @@
           return out;
         },
         performerList: function(performers) {
-          if (!performers){ return 'Someone'; }
-          return performers.map(function(p){ return p.name }).join(', ');
+          if (!performers) { return 'Someone'; }
+          return performers.map(function(p){ return p.name; }).join(', ');
         },
         replay: function() {
           this.room.command = {
@@ -178,7 +178,7 @@
               name: 'track',
               args: [this.$.queue.trackAfter(this.room.currentTrack)],
               user: this.globals.prefs
-            }
+            };
           } else {
             this.fire('app-notify', 'No songs left in queue!');
           }

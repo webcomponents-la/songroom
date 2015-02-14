@@ -85,10 +85,10 @@
           'paused current': 'updateIcon'
         },
         updateIcon: function() {
-          this.removeIcon = this.current ? (this.paused ? 'av:volume-mute' : 'av:volume-up') : 'clear'
+          this.removeIcon = this.current ? (this.paused ? 'av:volume-mute' : 'av:volume-up') : 'clear';
         },
         removeFromQueue: function() {
-          if (!this.current) this.fire('remove', this.data);
+          if (!this.current) { this.fire('remove', this.data); }
         },
         dataChanged: function() {
           if (this.data && this.data.performers) {

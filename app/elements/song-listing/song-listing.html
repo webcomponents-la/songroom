@@ -57,7 +57,7 @@
 
       Polymer({
         toggleStar: function() {
-          this.starred = !this.starred
+          this.starred = !this.starred;
         },
         enqueue: function() {
           this.fire('enqueue', this.song);
