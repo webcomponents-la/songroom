@@ -2,7 +2,7 @@ language: node_js
 sudo: false
 before_install: npm install -g gulp bower
 install: npm install && bower install
-script: gulp build:dist
+script: gulp
 cache:
   directories:
   - ".divshot-cache"
