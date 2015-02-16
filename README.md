@@ -6,18 +6,19 @@ separate screen.
 
 ## Getting Started
 
-To get started with development, you'll need Grunt, Bower, and Yeoman Polymer
+To get started with development, you'll need Gulp, Bower, and Yeoman Polymer
 installed:
 
-    npm install -g grunt-cli bower yo generator-polymer
+    npm install -g gulp bower yo generator-polymer
 
 Next you'll need to install NPM and Bower dependencies:
 
     npm install && bower install
 
 Next you'll want to sign up for [Firebase](https://www.firebase.com/) and create
-a test Firebase for yourself to use when you work on the app. Once you've done
-that, create a `.env.json` file in the project directory that looks like this:
+a test Firebase (with anonymous access permissions) for yourself to use when you work on the app.
+Once you've done that, create a `.env.json` file in the project directory that looks
+like this:
 
 ```javascript
 {
@@ -28,7 +29,7 @@ that, create a `.env.json` file in the project directory that looks like this:
 This will allow you to test locally without interfering with production data.
 Once you've done that, you can get a development server going:
 
-    grunt serve
+    gulp serve
 
 The app will now be running on `localhost:8080`.
 

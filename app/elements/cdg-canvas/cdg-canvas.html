@@ -20,6 +20,8 @@
   </template>
   <script src="cdg-canvas.js"></script>
   <script>
+    /*jshint camelcase:false */
+    /*global CDGMagic_cdgdecoder */
     Polymer('cdg-canvas', {
       publish: {
         src: null,
@@ -43,7 +45,7 @@
         var xScale = rect.width / 312.0;
         var yScale = rect.height / 214.0;
         var scale = Math.min(xScale, yScale);
-        this.$.canvas.style.transform = "scale(" + scale + ")";
+        this.$.canvas.style.transform = 'scale(' + scale + ')';
       },
       positionChanged: function() {
         var playPosition = Math.floor(this.position * 300);

@@ -89,7 +89,7 @@
         },
 
         created: function() {
-          this.roomId = window.location.pathname.split("/")[2];
+          this.roomId = window.location.pathname.split('/')[2];
         },
         updateDuration: function() {
           if (this.playback) {
@@ -98,7 +98,7 @@
           }
         },
         signalConnection: function() {
-          if (!this.playback) return;
+          if (!this.playback) { return; }
           this.playback.connected = true;
           this.$.playbackRef.ref.onDisconnect().update({
             connected: false,
@@ -109,9 +109,9 @@
           seek: function(position) {
             this.$.player.seek(position);
             if (position === 0) {
-              return "rewound the song to the start";
+              return 'rewound the song to the start';
             } else {
-              return "jumped to a different part of the song";
+              return 'jumped to a different part of the song';
             }
           },
           togglePlayback: function() {
@@ -121,11 +121,11 @@
             } else {
               this.playback.paused = !this.playback.paused;
             }
-            return this.playback.paused ? "paused playback" : "resumed playback";
+            return this.playback.paused ? 'paused playback' : 'resumed playback';
           },
           track: function(newTrack) {
             this.playTrack(newTrack);
-            return "changed the current song";
+            return 'changed the current song';
           }
         },
         handlePlayback: function() {
@@ -151,18 +151,18 @@
         },
         nextTrack: function() {
           var val = this.$.queueRef.keys.indexOf(this.room.currentTrack);
-          if (val > this.data.length) return null;
+          if (val > this.data.length) { return null; }
           return this.$.queueRef.keys[val + 1];
         },
         trackChanged: function() {
-          if (!this.room['queue'] || !this.room.currentTrack) return;
+          if (!this.room.queue || !this.room.currentTrack) { return; }
           var newTrack = this.room.queue[this.room.currentTrack];
           if (!newTrack) {
             this.currentTrack = null;
             this.room.currentTrack = null;
           } else if (newTrack !== this.currentTrack) {
             this.currentTrack = newTrack;
-            console.log("Playing", newTrack.song.title);
+            console.log('Playing', newTrack.song.title);
           }
         },
         goFullscreen: function() {
@@ -181,8 +181,8 @@
         processCommand: function() {
           if (this.room && this.room.command) {
             var message = this.commands[this.room.command.name].apply(this, this.room.command.args);
-            this.$.toast.style.backgroundColor = this.room.command.user.color || "black";
-            this.$.toast.text = this.room.command.user.name + " " + message;
+            this.$.toast.style.backgroundColor = this.room.command.user.color || 'black';
+            this.$.toast.text = this.room.command.user.name + ' ' + message;
             this.$.toast.show();
             this.room.command = null;
           }
@@ -194,7 +194,7 @@
         },
         songColor: function(track) {
           if (track) {
-            return track.performers[0].color || "black";
+            return track.performers[0].color || 'black';
           }
         }
       });
