@@ -34,7 +34,7 @@
           var key = song.$key;
           delete song.$key;
           delete song.$priority;
-          var newRef = this.$.ref.ref.child(key)
+          var newRef = this.$.ref.ref.child(key);
           newRef.setWithPriority({
             song: song,
             performers: performers || []
@@ -49,13 +49,15 @@
         },
         trackAfter: function(key) {
           var val = this.$.ref.keys.indexOf(key);
-          if (val > this.data.length) return null;
+          if (val > this.data.length) { return null; }
           return this.$.ref.keys[val + 1];
         },
         getTrack: function(i) {
           var out = {};
           for (var key in out) {
-            if (key.indexOf('$') !== 0) out[key] = this.data[i][key];
+            if (key.indexOf('$') !== 0) {
+              out[key] = this.data[i][key];
+            }
           }
           return out;
         }

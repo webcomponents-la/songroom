@@ -1,3 +1,4 @@
+/*jshint ignore:start */
 /*
  *  This file is part of CD+Graphics Magic.
  *
@@ -172,7 +173,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
             };
         };
     };
-    
+
     // Decode to pack playback_position, using cdg_file_data.
     function decode_packs(cdg_file_data, playback_position)
     {
@@ -191,13 +192,13 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
                 {
                     case CDG_ENUM.MEMORY_PRESET: proc_MEMORY_PRESET(this_pack); break;
                     case CDG_ENUM.BORDER_PRESET: proc_BORDER_PRESET(this_pack); break;
-    
+
                     case CDG_ENUM.LOAD_CLUT_LO:
                     case CDG_ENUM.LOAD_CLUT_HI: proc_LOAD_CLUT(this_pack); break;
-    
+
                     case CDG_ENUM.COPY_FONT:
                     case CDG_ENUM.XOR_FONT: proc_WRITE_FONT(this_pack); break;
-    
+
                     case CDG_ENUM.SCROLL_PRESET:
                     case CDG_ENUM.SCROLL_COPY: proc_DO_SCROLL(this_pack); break;
                 };
@@ -267,7 +268,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
         var  rgb_loc = 0x00;  // Offset into RGBA array.
         var curr_rgb = 0x00;          // RGBA value of current pixel.
         var curr_line_indices = 0x00; // Packed font row index values.
-        
+
         var border_color = local_pal[0x00];
 
         for (var y_pxl = 0; y_pxl < vis_height; ++y_pxl)
@@ -345,8 +346,8 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
     {
         clear_vram(cdg_pack.charCodeAt(4) & 0x3F);
     };
-    
-    
+
+
     function proc_LOAD_CLUT(cdg_pack)
     {
         var local_palette = internal_palette;
@@ -376,7 +377,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
     		};
         };
     };
-    
+
     function proc_WRITE_FONT(cdg_pack)
     {
         var local_vram = internal_vram;
@@ -391,7 +392,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
         {
             var x_location = cdg_pack.charCodeAt(7) & 0x3F; // Get horizontal font location.
             var y_location = cdg_pack.charCodeAt(6) & 0x1F; // Get vertical font location.
-    
+
             // Verify we're not going to overrun the boundaries (i.e. bad data from a scratched disc).
             if ( (x_location<=49) && (y_location<=17) )
             {
@@ -424,15 +425,15 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
         var direction = 0;                                   // H/V direction flag.
         var copy_flag = (cdg_pack.charCodeAt(1)&0x08) >> 3;  // Type of copy (memory preset or copy).
         var color = cdg_pack.charCodeAt(4)&0x0F;             // Color index to use for preset type.
-    
+
         // Process horizontal commands.
         if ( (direction = ((cdg_pack.charCodeAt(5)&0x30) >> 4)) )  { proc_VRAM_HSCROLL( direction, copy_flag, color ); };
         // Process vertical commands.
         if ( (direction = ((cdg_pack.charCodeAt(6)&0x30) >> 4)) )  { proc_VRAM_VSCROLL( direction, copy_flag, color ); };
-        
+
         internal_screen_dirty = 1;  // Entire screen needs to be redrawn.
     };
-    
+
     function proc_VRAM_HSCROLL(direction, copy_flag, color)
     {
         var buf = 0;
@@ -462,7 +463,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
             };
         };
     };
-    
+
     function proc_VRAM_VSCROLL(direction, copy_flag, color)
     {
         var offscreen_size = CDG_ENUM.NUM_X_FONTS * CDG_ENUM.FONT_HEIGHT;
@@ -478,7 +479,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
             for (var src_idx = offscreen_size; src_idx < (50*216); src_idx++)  { local_vram[dst_idx++] = local_vram[src_idx]; };
             dst_idx = (CDG_ENUM.NUM_X_FONTS * 204); // Destination begins at line 204.
             if ( copy_flag )
-            { 
+            {
                 for (var src_idx = 0; src_idx < offscreen_size; src_idx++)  { local_vram[dst_idx++] = buf[src_idx]; };
             }
             else
@@ -493,7 +494,7 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
             for (var src_idx = (50*204); src_idx < (50*216); src_idx++)  { buf[dst_idx++] = local_vram[src_idx]; };
             for (var src_idx = (50*204)-1; src_idx > 0; src_idx--)  { local_vram[src_idx+offscreen_size] = local_vram[src_idx]; };
             if ( copy_flag )
-            { 
+            {
                 for (var src_idx = 0; src_idx < offscreen_size; src_idx++)  { local_vram[src_idx] = buf[src_idx]; };
             }
             else
@@ -504,3 +505,4 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
     };
 
 };
+/*jshint ignore:end */

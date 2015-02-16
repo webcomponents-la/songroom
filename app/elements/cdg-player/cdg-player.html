@@ -58,14 +58,13 @@
           }
         },
         render: function(){
-          this.$.canvas.position = this.$.audio.currentTime
+          this.$.canvas.position = this.$.audio.currentTime;
           if (this.tick % this.framerate === 0) {
             this.position = this.$.audio.currentTime;
           }
           this.tick++;
         },
         seek: function(pos) {
-          console.log("Seeking", pos);
           this.$.audio.currentTime = pos;
         },
         passEvent: function(e) {

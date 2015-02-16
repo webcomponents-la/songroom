@@ -141,7 +141,7 @@
     (function () {
       'use strict';
 
-      var LETTERS = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split(' ');
+      var LETTERS = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ');
 
       Polymer({
         joinType: null,
@@ -160,30 +160,30 @@
           {name: 'Deep Orange', value: '#FF5722'},
         ],
         selectJoinType: function(e) {
-          this.joinType = e.currentTarget.getAttribute("name");
+          this.joinType = e.currentTarget.getAttribute('name');
         },
         joinTypeChanged: function() {
           if (window.location.pathname.indexOf(this.joinType) < 0) {
-            window.history.pushState(null, {}, "/join/" + this.joinType);
+            window.history.pushState(null, {}, '/join/' + this.joinType);
           }
         },
         launchPlayer: function() {
-          window.location = "/player.html?room=" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+          window.location = '/player.html?room=' + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
         },
         joinRoom: function() {
-          if (this.joinType === "performer") {
-            this.globals.router.go("/rooms/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase());
+          if (this.joinType === 'performer') {
+            this.globals.router.go('/rooms/' + this.shadowRoot.querySelector('#roomInput').value.toUpperCase());
           } else {
-            window.location = "/player/" + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
+            window.location = '/player/' + this.shadowRoot.querySelector('#roomInput').value.toUpperCase();
           }
         },
         createRoom: function() {
-          var newid = "";
+          var newid = '';
           for(var i = 0; i < 4; i++) {
             newid += LETTERS[Math.floor(Math.random() * 25)];
           }
 
-          var roomRef = new Firebase(this.globals.env.FIREBASE_ORIGIN + "/rooms/" + newid);
+          var roomRef = new Firebase(this.globals.env.FIREBASE_ORIGIN + '/rooms/' + newid);
           roomRef.set({
             users: {},
             queue: {},
@@ -197,7 +197,7 @@
             }
           }, function() {
             this.globals.prefs.roomCode = newid;
-            this.globals.router.go("/rooms/" + newid + "/created");
+            this.globals.router.go('/rooms/' + newid + '/created');
           }.bind(this));
 
         }

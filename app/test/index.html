@@ -6,15 +6,17 @@
     <title>Core Elements Test Runner</title>
     <meta charset="UTF-8">
 
-    <script src="../bower_components/platform/platform.js"></script>
-
-    <link rel="import" href="tests.html">
-
+    <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
   </head>
 
   <body>
 
-    <div id="mocha"></div>
+    <script>
+      /*global WCT */
+      WCT.loadSuites(['app-data-test.html']);
+    </script>
+
 
   </body>
 
