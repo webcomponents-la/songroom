@@ -21,7 +21,6 @@
     <app-data id="roomRef" path="/rooms/{{roomid}}" data="{{room}}" on-data-ready="{{trackChanged}}"></app-data>
     <app-list id="usersRef" path="/rooms/{{roomid}}/users" data="{{users}}" on-data-ready="{{usersReady}}"></app-list>
     <app-data id="playbackRef" path="/rooms/{{roomid}}/playback" data="{{playback}}"></app-data>
-    <app-list id="songsRef" orderByChild="title" path="/collections/{{room.collection}}/songs" data="{{songs}}"></app-list>
 
     <template if="{{currentTrack}}">
       <section id="controls" horizontal layout center class="{{ {offline: !playback.connected} | tokenList}}">
