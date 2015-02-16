@@ -27,11 +27,11 @@
         },
         initApi: function() {
           this.yt = this.$.yt.api;
-          gapi.client.setApiKey('AIzaSyBhZfUMZ1pPJ7-qv2Gcv0neEkkn0G58T-w');
+          window.gapi.client.setApiKey('AIzaSyBhZfUMZ1pPJ7-qv2Gcv0neEkkn0G58T-w');
           console.log('YouTube API Client Initialized');
         },
         search: function() {
-          if (this.q.length < 4) return;
+          if (this.q.length < 4) { return; }
 
           this.$.yt.api.search.list({
             q: this.q,
