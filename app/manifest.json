@@ -1,0 +1,8 @@
+{
+  "name": "Songroom Karaoke",
+  "short_name": "Songroom",
+  "scope": "/",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "standalone"
+}

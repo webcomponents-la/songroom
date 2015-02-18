@@ -1,0 +1,91 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-apis/google-client-api.html">
+<link rel="import" href="../../bower_components/core-input/core-input.html">
+<link rel="import" href="../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
+
+<polymer-element name="songroom-find" attributes="q selected" fit vertical layout>
+  <template>
+    <link rel="stylesheet" href="songroom-find.css">
+    <google-api-loader id="yt" name="youtube" version="v3" on-google-api-load="{{initApi}}"></google-api-loader>
+    <pvc-globals values="{{globals}}"></pvc-globals>
+
+    <input is="core-input" id="q" type="search" committedValue="{{q}}" placeholder="Search YouTube for Songs..."></input>
+    <core-list data="{{results}}" flex on-core-activate="{{resultSelected}}">
+      <template>
+        <div horizontal layout center class="result">
+          <core-image src="{{model.snippet.thumbnails.default.url}}" width="60" height="45" sizing="contain" preload fade></core-image>
+          <div class="details" flex>{{model.snippet.title}}</div>
+        </div>
+      </template>
+    </core-list>
+
+    <section id="adder" class="{{ {active: selected} | tokenList }}" fit vertical layout>
+      <h3>{{selected.snippet.title}}</h3>
+      <div flex></div>
+      <div class="actions">
+        <a on-tap="{{enqueue}}">Add to Queue</a>
+        <a on-tap="{{clearSelected}}">Cancel</a>
+      </div>
+    </section>
+  </template>
+  <script>
+    (function () {
+
+      Polymer({
+        observe: {
+          'q': 'search'
+        },
+        initApi: function() {
+          this.yt = this.$.yt.api;
+          window.gapi.client.setApiKey('AIzaSyBhZfUMZ1pPJ7-qv2Gcv0neEkkn0G58T-w');
+          console.log('YouTube API Client Initialized');
+        },
+        search: function() {
+          this.$.q.blur();
+          this.results = [];
+          if (this.q.length < 3) { return; }
+          var _query = this.q.toLowerCase();
+          if (_query.indexOf('karaoke') < 0) { _query += ' karaoke'; }
+
+          this.$.yt.api.search.list({
+            q: _query,
+            part: 'snippet',
+            type: 'video',
+            videoEmbeddable: true,
+            maxResults: 10
+          }).execute(this.searchResponse.bind(this));
+        },
+        searchResponse: function(res) {
+          if (res && res.items.length) {
+            this.results = res.items;
+          } else {
+            this.results = [];
+          }
+        },
+        resultSelected: function(e, detail) {
+          this.selected = detail.data;
+        },
+        enqueue: function() {
+          if (!this.selected) { return; }
+          this.fire('enqueue', {
+            song: {
+              title: this.selected.snippet.title
+            },
+            source: {
+              type: 'youtube',
+              id: this.selected.id.videoId
+            },
+            performers: [{name: this.globals.prefs.name, color: this.globals.prefs.color, id: this.globals.user.uid}]
+          });
+          this.selected = null;
+        },
+        clearSelected: function() {
+          this.selected = null;
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

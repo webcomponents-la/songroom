@@ -25,7 +25,10 @@
     "firebase": "2.0.x",
     "core-localstorage": "Polymer/core-localstorage#^0.5.1",
     "pvc-globals": "divshot/pvc-globals",
-    "divshot-env": "divshot/divshot-env#~0.1.0"
+    "divshot-env": "divshot/divshot-env#~0.1.0",
+    "google-apis": "GoogleWebComponents/google-apis#~0.4.3",
+    "google-youtube": "GoogleWebComponents/google-youtube#~1.0.4",
+    "core-image": "polymer/core-image#~0.5.4"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^2.2.3"

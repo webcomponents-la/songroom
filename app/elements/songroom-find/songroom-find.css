@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+#q {
+  display: block;
+  background: #222;
+  color: white;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.result .details {
+  padding: 8px;
+}
+
+#adder {
+  box-sizing: border-box;
+  padding: 16px;
+  background: #333;
+  color: white;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.4);
+  transition: opacity 0.1s, transform 0.3s;
+}
+
+#adder.active {
+  opacity: 1.0;
+  transform: scale(1.0);
+  pointer-events: auto;
+}
+
+#adder h3 {
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+#adder .actions a {
+  display: block;
+  padding: 8px;
+  background: #222;
+  color: white;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-top: 8px;
+  cursor: pointer;
+}

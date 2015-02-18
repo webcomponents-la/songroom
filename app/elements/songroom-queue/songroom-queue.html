@@ -29,16 +29,9 @@
           this.$.ref.remove(track.$key);
           this.fire('remove', track);
         },
-        push: function(song, performers) {
-          song = Polymer.mixin({}, song);
-          var key = song.$key;
-          delete song.$key;
-          delete song.$priority;
-          var newRef = this.$.ref.ref.child(key);
-          newRef.setWithPriority({
-            song: song,
-            performers: performers || []
-          }, this.data.length);
+        push: function(song) {
+          var newRef = this.$.ref.ref.push(song);
+          newRef.setPriority(this.data.length);
           return newRef;
         },
         unshift: function(data) {

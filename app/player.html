@@ -16,7 +16,7 @@
   <!-- endbuild-->
 
   <script src="/bower_components/webcomponentsjs/webcomponents.js"></script>
-  <!-- build:vulcanized /elements/player-elements.vulcanized.html -->
+  <!-- to be replaced with /elements/player-elements.vulcanized.html -->
   <link rel="import" href="/elements/player-elements.html">
   <!-- endbuild-->
 </head>
@@ -27,6 +27,14 @@
   <!-- build:js /scripts/app.js -->
   <script src="/scripts/app.js"></script>
   <!-- endbuild-->
+  
+  <!-- build:remove -->
+  <script type='text/javascript' id="__bs_script__">//<![CDATA[
+    /*jshint ignore:start */
+    document.write('<script async src=\'//HOST:3000/browser-sync/browser-sync-client.1.9.1.js\'><\/script>'.replace(/HOST/g, location.hostname).replace(/PORT/g, location.port));
+    /*jshint ignore:end */
+  //]]></script>
+  <!-- endbuild -->
 </body>
 
 </html>
