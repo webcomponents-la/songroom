@@ -40,7 +40,7 @@
 
     <paper-tabs selected="{{tab}}" valueattr="name">
       <paper-tab name="tab-queue"><core-icon icon="list"></core-icon> Queue</paper-tab>
-      <paper-tab name="tab-browse"><core-icon icon="search"></core-icon> Browse</paper-tab>
+      <paper-tab name="tab-find"><core-icon icon="search"></core-icon> YouTube</paper-tab>
     </paper-tabs>
 
 
@@ -48,8 +48,8 @@
       <section id="tab-queue">
         <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" paused?="{{playback.paused}}" on-remove="{{trackRemoved}}"></songroom-queue>
       </section>
-      <section id="tab-browse" layout vertical flex>
-        <songroom-find></songroom-find>
+      <section id="tab-find" layout vertical flex>
+        <songroom-find id="find" on-enqueue="{{handleEnqueue}}"></songroom-find>
       </section>
     </core-animated-pages>
 
@@ -88,16 +88,11 @@
             this.skip();
           }
         },
-        handleEnqueue: function(e, song) {
-          var performers = [
-            {name: this.globals.prefs.name, color: this.globals.prefs.color, id: this.globals.user.uid}
-          ];
-
-          var newRef = this.$.queue.push(song, performers);
-
+        handleEnqueue: function(e, track) {
+          var newRef = this.$.queue.push(track);
           if (!this.room.currentTrack){ this.room.currentTrack = newRef.key(); }
 
-          this.fire('app-notify', '"' + song.title + '" was added to the queue.');
+          this.fire('app-notify', '"' + track.song.title + '" was added to the queue.');
         },
         toggleFavorite: function() {
 
@@ -132,7 +127,7 @@
               this.room.currentTrack = null;
             }
           } else if (this.$.queue.data && this.$.queue.length) {
-            this.room.currentTrack = this.$.queue.data[0].key;
+            this.room.currentTrack = this.$.queue.data[0].$key;
           }
         },
         playbackIcon: function(paused) {

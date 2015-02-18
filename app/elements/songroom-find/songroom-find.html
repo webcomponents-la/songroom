@@ -3,11 +3,14 @@
 <link rel="import" href="../../bower_components/core-input/core-input.html">
 <link rel="import" href="../../bower_components/core-list/core-list.html">
 <link rel="import" href="../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../bower_components/pvc-globals/pvc-globals.html">
 
 <polymer-element name="songroom-find" attributes="q selected" fit vertical layout>
   <template>
     <link rel="stylesheet" href="songroom-find.css">
     <google-api-loader id="yt" name="youtube" version="v3" on-google-api-load="{{initApi}}"></google-api-loader>
+    <pvc-globals values="{{globals}}"></pvc-globals>
+
     <input is="core-input" id="q" type="search" committedValue="{{q}}" placeholder="Search YouTube for Songs..."></input>
     <core-list data="{{results}}" flex on-core-activate="{{resultSelected}}">
       <template>
@@ -40,10 +43,11 @@
           console.log('YouTube API Client Initialized');
         },
         search: function() {
+          this.$.q.blur();
           this.results = [];
           if (this.q.length < 3) { return; }
           var _query = this.q.toLowerCase();
-          if (_query.indexOf('karaoke') < 0) { _query += " karaoke"; }
+          if (_query.indexOf('karaoke') < 0) { _query += ' karaoke'; }
 
           this.$.yt.api.search.list({
             q: _query,
@@ -66,12 +70,16 @@
         enqueue: function() {
           if (!this.selected) { return; }
           this.fire('enqueue', {
-            title: this.selected.snippet.title,
+            song: {
+              title: this.selected.snippet.title
+            },
             source: {
               type: 'youtube',
               id: this.selected.id.videoId
-            }
+            },
+            performers: [{name: this.globals.prefs.name, color: this.globals.prefs.color, id: this.globals.user.uid}]
           });
+          this.selected = null;
         },
         clearSelected: function() {
           this.selected = null;

@@ -1,12 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../bower_components/google-youtube/google-youtube.html">
 
 <link rel="import" href="../app-data/app-data.html">
 <link rel="import" href="../app-data/app-list.html">
 <link rel="import" href="../cdg-player/cdg-player.html">
 
-<polymer-element name="songroom-player" attributes="room queue queueKeys currentTrack playback playbackPaused" on-dblclick="{{goFullscreen}}">
+<polymer-element name="songroom-player" attributes="room queue queueKeys currentTrack playback playbackPaused" fit on-dblclick="{{goFullscreen}}">
   <template>
     <style>
       :host {
@@ -59,7 +60,11 @@
     <app-data id="playbackRef" path="/rooms/{{roomId}}/playback" data="{{playback}}" on-data-ready="{{signalConnection}}"></app-data>
     <app-list id="queueRef" orderByPriority path="/rooms/{{roomId}}/queue" data="{{data}}"></app-list>
 
-    <cdg-player fit id="player" src="{{currentTrack.song.mp3_url}}" gsrc="{{currentTrack.song.cdg_url}}" duration="{{playback.duration}}" paused="{{playbackPaused}}" position="{{playback.position}}" on-ended="{{playNext}}"></cdg-player>
+    <template if="{{currentTrack.source.type === 'youtube'}}">
+      <google-youtube id="yt" fit width="100%" height="100%" chromeless videoid="{{currentTrack.source.id}}"></google-youtube>
+    </template>
+    <!-- <cdg-player fit id="player" src="{{currentTrack.song.mp3_url}}" gsrc="{{currentTrack.song.cdg_url}}" duration="{{playback.duration}}" paused="{{playbackPaused}}" position="{{playback.position}}" on-ended="{{playNext}}"></cdg-player> -->
+
     <div id="pauser" class="{{ {show : playback.paused} | tokenList}}" fit layout vertical center center-justified>
       <core-icon style="width: 300px; height: 300px; color: white;" icon="av:pause"></core-icon>
     </div>
@@ -85,16 +90,26 @@
           'room.command': 'processCommand',
           'room.currentTrack': 'trackChanged',
           'playback playback.paused playback.banner': 'handlePlayback',
-          'playback': 'signalConnection'
+          'playback': 'signalConnection',
+          'yt.duration': 'updateDuration',
+          'yt.currenttime': 'updatePosition'
         },
 
+        get yt() {
+          if (!this.shadowRoot){ return null; }
+          return this.shadowRoot.querySelector('#yt');
+        },
         created: function() {
           this.roomId = window.location.pathname.split('/')[2];
         },
         updateDuration: function() {
           if (this.playback) {
-
-            this.playback.duration = this.$.audio.duration || 0;
+            this.playback.duration = this.yt.duration || 0;
+          }
+        },
+        updatePosition: function() {
+          if (this.playback) {
+            this.playback.position = this.yt.currenttime || 0;
           }
         },
         signalConnection: function() {
@@ -107,7 +122,7 @@
         },
         commands: {
           seek: function(position) {
-            this.$.player.seek(position);
+            if (this.yt){ this.yt.seekTo(position); }
             if (position === 0) {
               return 'rewound the song to the start';
             } else {
@@ -130,6 +145,11 @@
         },
         handlePlayback: function() {
           this.playbackPaused = this.playback.paused || this.playback.banner;
+          if (this.playbackPaused && this.yt.state !== 2) {
+            this.yt.pause();
+          } else if (!this.playbackPaused && this.yt.state !== 1) {
+            this.yt.play();
+          }
         },
         playTrack: function(newTrack) {
           this.$.playbackRef.ref.update({
