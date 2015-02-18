@@ -31,20 +31,25 @@ Once you've done that, you can get a development server going:
 
     gulp serve
 
-The app will now be running on `localhost:8080`.
+The app will now be running on `localhost:8080`. Give it a spin!
 
-### Loading Seed Data
+## Continuous Deployment
 
-To get the app fully up and running on your own Firebase, you'll need some seed
-data. This is provided in the `seed` directory and nested according to its Firebase
-location. For instance to load seed data contained in `seed/collections/pub.json`,
-open a browser to:
+This project uses Travis CI for continuous deployment to Divshot. Because there
+are presently no tests, `master` deploys to the `development` environment, with
+`staging` and `production` branches.
 
-    https://YOUR-FIREBASE.firebaseio.com/collections/pub
+## Contributing
 
-Then click the **Import JSON** button and load the `pub.json` file. **This will
-replace all data at that location**, so be sure you're not overwriting anything
-important.
+This is meant to be a community project, however to maximize both sanity and
+learning experiences, we're going to do *everything* via pull requests.
+
+Take a look at the [issues page](https://github.com/webcomponents-la/songroom) for
+ideas of things to work on (or submit a new issue for something you want to
+work on), then fork, create a topic branch, and submit a pull request.
+
+We'll do our best to do code reviews and not only help get the features shipped
+but help teach more about how to do Web Components apps right.
 
 ## Origin Story
 
@@ -67,25 +72,15 @@ to open-source the result and open it up to the Web Components LA community.
 Perhaps we can, all together, build the best darn Karaoke experience the world
 has ever seen using 100% web technology.
 
-And on that day, we'll sing.
+### Chapter Two: The YouTubening
 
-## Continuous Deployment
+As I got a little bit further into this project, I realized that it would be very
+very hard to get very far trying to use MP3+G as the primary source of content for
+Songroom. Licensing is, frankly, a nightmare.
 
-This project uses Travis CI for continuous deployment to Divshot. Because there
-are presently no tests, `master` deploys to the `development` environment, with
-`staging` and `production` branches.
-
-## Contributing
-
-This is meant to be a community project, however to maximize both sanity and
-learning experiences, we're going to do *everything* via pull requests.
-
-Take a look at the [issues page](https://github.com/webcomponents-la/songroom) for
-ideas of things to work on (or submit a new issue for something you want to
-work on), then fork, create a topic branch, and submit a pull request.
-
-We'll do our best to do code reviews and not only help get the features shipped
-but help teach more about how to do Web Components apps right.
+And so it came to pass that I realized that YouTube has pretty much every song
+ever as karaoke already. And so I did write the app such that it could search
+YouTube and play songs that way. And there was much rejoicing.
 
 ## License
 
