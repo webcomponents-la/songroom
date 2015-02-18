@@ -66,8 +66,10 @@ gulp.task('copy', function () {
   var elements = gulp.src(['app/elements/**/*.html'])
     .pipe(gulp.dest('dist/elements'));
 
-  var vulcanized = gulp.src(['app/elements/elements.html'])
-    .pipe($.rename('elements.vulcanized.html'))
+  var vulcanized = gulp.src(['app/elements/controller-elements.html','app/elements/player-elements.html'])
+    .pipe($.rename(function(path) {
+      path.extname = '.vulcanized' + path.extname;
+    }))
     .pipe(gulp.dest('dist/elements'));
 
   return merge(app, bower, elements, vulcanized).pipe($.size({title: 'copy'}));
@@ -113,7 +115,10 @@ gulp.task('html', function () {
 
   return gulp.src(['app/**/*.html', '!app/{elements,test}/**/*.html'])
     // Replace path for vulcanized assets
-    .pipe($.if('*.html', $.replace('elements/controller-elements.html', 'elements/elements.vulcanized.html')))
+    .pipe($.if('*.html', 
+      $.replace('elements/controller-elements.html', 'elements/controller-elements.vulcanized.html'),
+      $.replace('elements/player-elements.html', 'elements/player-elements.vulcanized.html')
+    ))
     .pipe(assets)
     // Concatenate And Minify JavaScript
     .pipe($.if('*.js', $.uglify({preserveComments: 'some'})))
@@ -137,7 +142,7 @@ gulp.task('html', function () {
 gulp.task('vulcanize', function () {
   var DEST_DIR = 'dist/elements';
 
-  return gulp.src('dist/elements/elements.vulcanized.html')
+  return gulp.src(['dist/elements/controller-elements.vulcanized.html','dist/elements/player-elements.vulcanized.html'])
     .pipe($.vulcanize({
       dest: DEST_DIR,
       strip: true
