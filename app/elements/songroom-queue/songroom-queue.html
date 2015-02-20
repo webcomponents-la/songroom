@@ -7,12 +7,15 @@
     <style>
       :host {
         display: block;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
     </style>
     <app-list id="ref" orderByPriority path="/rooms/{{roomid}}/queue" data="{{data}}"></app-list>
 
     <template repeat="{{song in data}}">
-      <queue-listing data="{{song}}" on-remove="{{remove}}" current?="{{song.$key === currentTrack}}" paused?="{{paused}}"></queue-listing>
+      <queue-listing data="{{song}}" on-remove="{{remove}}" on-play="{{play}}" current?="{{song.$key === currentTrack}}" paused?="{{paused}}"></queue-listing>
     </template>
   </template>
   <script>
@@ -28,6 +31,9 @@
           }
           this.$.ref.remove(track.$key);
           this.fire('remove', track);
+        },
+        play: function(e, track) {
+          this.fire('play', track);
         },
         push: function(song) {
           var newRef = this.$.ref.ref.push(song);

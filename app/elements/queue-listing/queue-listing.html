@@ -61,7 +61,7 @@
       }
     </style>
 
-    <div class="queuelisting" horizontal layout center>
+    <div class="queuelisting" horizontal layout center on-dblclick="{{play}}">
       <template repeat="{{performer in data.performers}}">
         <performer-icon performer="{{performer}}"></performer-icon>
       </template>
@@ -89,6 +89,9 @@
         },
         removeFromQueue: function() {
           if (!this.current) { this.fire('remove', this.data); }
+        },
+        play: function() {
+          if (!this.current) { this.fire('play', this.data); }
         },
         dataChanged: function() {
           if (this.data && this.data.performers) {

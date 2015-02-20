@@ -46,7 +46,7 @@
 
     <core-animated-pages flex selected="{{tab}}" valueattr="id" transitions="slide-from-right">
       <section id="tab-queue">
-        <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" paused?="{{playback.paused}}" on-remove="{{trackRemoved}}"></songroom-queue>
+        <songroom-queue id="queue" roomid="{{roomid}}" currentTrack="{{room.currentTrack}}" paused?="{{playback.paused}}" on-remove="{{trackRemoved}}" on-play="{{playTrack}}"></songroom-queue>
       </section>
       <section id="tab-find" layout vertical flex>
         <songroom-find id="find" on-enqueue="{{handleEnqueue}}"></songroom-find>
@@ -173,6 +173,13 @@
           } else {
             this.fire('app-notify', 'No songs left in queue!');
           }
+        },
+        playTrack: function(_, track) {
+          this.room.command = {
+            name: 'track',
+            args: [track.$key],
+            user: this.globals.prefs
+          };
         }
       });
 
