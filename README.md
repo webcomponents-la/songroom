@@ -16,8 +16,9 @@ Next you'll need to install NPM and Bower dependencies:
     npm install && bower install
 
 Next you'll want to sign up for [Firebase](https://www.firebase.com/) and create
-a test Firebase (with anonymous access permissions) for yourself to use when you work on the app.
-Once you've done that, create a `.env.json` file in the project directory that looks
+a test Firebase for yourself to use when you work on the app. **Make sure you go 
+to the "Login & Auth" tab and enable Anonymous Authentication.** Once you've done 
+that, create a `.env.json` file in the project directory that looks
 like this:
 
 ```javascript
