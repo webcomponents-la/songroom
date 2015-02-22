@@ -38,5 +38,8 @@
   },
   "engines": {
     "node": ">=0.10.0"
+  },
+  "scripts": {
+    "build":"./node_modules/.bin/gulp"
   }
 }
